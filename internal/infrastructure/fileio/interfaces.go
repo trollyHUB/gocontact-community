@@ -12,7 +12,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// Exporter определяет стратегию экспорта списка контактов в поток (Недели 6, 7: Интерфейсы + Паттерн Strategy).
+// Exporter определяет стратегию экспорта списка контактов в поток (Паттерн Strategy).
 type Exporter interface {
 	Export(w io.Writer, contacts []*domain.Contact) error
 	FormatName() string

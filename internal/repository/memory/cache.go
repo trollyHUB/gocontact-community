@@ -9,7 +9,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// ContactCache — потокобезопасный In-Memory кэш и индекс контактов на базе map и sync.RWMutex (Недели 5, 10).
+// ContactCache — потокобезопасный In-Memory кэш и индекс контактов на базе map и sync.RWMutex.
 type ContactCache struct {
 	mu      sync.RWMutex
 	byID    map[int64]*domain.Contact

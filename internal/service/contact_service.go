@@ -16,7 +16,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/repository/memory"
 )
 
-// ContactService объединяет бизнес-логику работы с контактами, группами, кэшем, файлами и сетью (Недели 6, 10).
+// ContactService объединяет бизнес-логику работы с контактами, группами, кэшем, файлами и сетью.
 type ContactService struct {
 	contactRepo repository.ContactRepository
 	groupRepo   repository.GroupRepository

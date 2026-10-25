@@ -195,7 +195,7 @@ func (u *AppUI) buildMainMenu() *fyne.MainMenu {
 		fyne.NewMenuItem("Переключить тему (Тёмная / Светлая)", func() {
 			u.toggleTheme()
 		}),
-		fyne.NewMenuItem("О программе (Матрица 15 недель)", func() {
+		fyne.NewMenuItem("О программе", func() {
 			u.showAboutDialog()
 		}),
 	)

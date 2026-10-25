@@ -19,7 +19,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/service"
 )
 
-// showAuditReportDialog выполняет многопоточный аудит базы и выводит результат в таблицу widget.NewTable (Недели 9, 10).
+// showAuditReportDialog выполняет многопоточный аудит базы и выводит результат в таблицу widget.NewTable.
 func (u *AppUI) showAuditReportDialog() {
 	u.setStatus("Запуск параллельного аудита контактов в горутинах...")
 	u.progressBar.Show()

@@ -41,7 +41,7 @@ type AuditInfo struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// Touch обновляет время модификации записи (метод с указателем — Недели 5, 6).
+// Touch обновляет время модификации записи (метод с указателем).
 func (a *AuditInfo) Touch() {
 	now := time.Now()
 	if a.CreatedAt.IsZero() {
@@ -50,7 +50,7 @@ func (a *AuditInfo) Touch() {
 	a.UpdatedAt = now
 }
 
-// Address представляет физический/почтовый адрес контакта (Недели 5, 6: композиция).
+// Address представляет физический/почтовый адрес контакта (композиция).
 type Address struct {
 	Street     string `json:"street"`
 	City       string `json:"city"`
@@ -87,7 +87,7 @@ func (a Address) IsEmpty() bool {
 		strings.TrimSpace(a.PostalCode) == ""
 }
 
-// Contact — главная доменная сущность «Контакт» адресной книги (Недели 4, 5, 6).
+// Contact — главная доменная сущность «Контакт» адресной книги.
 type Contact struct {
 	ID         int64     `json:"id"`
 	GroupID    int64     `json:"group_id"`
@@ -173,7 +173,7 @@ func (c *Contact) ToggleFavorite() bool {
 	return c.IsFavorite
 }
 
-// AddTag добавляет уникальный тег в срез Tags контакта (работа со слайсами и циклами — Недели 4, 5).
+// AddTag добавляет уникальный тег в срез Tags контакта.
 func (c *Contact) AddTag(tag string) {
 	clean := strings.ToLower(strings.TrimSpace(strings.TrimPrefix(tag, "#")))
 	if clean == "" {

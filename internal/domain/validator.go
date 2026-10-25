@@ -87,7 +87,7 @@ func ValidateBirthday(birthday string) error {
 	return NewValidationError("День рождения", birthday, "используйте формат ДД.ММ.ГГГГ (например, 15.05.1998)", ErrInvalidBirthday)
 }
 
-// NormalizeAndValidateContact проверяет и нормализует все поля структуры Contact по указателю (Недели 4, 5, 8).
+// NormalizeAndValidateContact проверяет и нормализует все поля структуры Contact по указателю.
 func NormalizeAndValidateContact(c *Contact) error {
 	if c == nil {
 		return NewValidationError("Contact", "", "объект контакта равен nil", ErrEmptyFirstName)

@@ -47,13 +47,13 @@ func main() {
 		log.Printf("[WARN] ошибка предзаполнения демо-данных: %v", err)
 	}
 
-	// 3. Инициализация репозиториев, кэша и сетевых адаптеров (Недели 5, 6, 11)
+	// 3. Инициализация репозиториев, кэша и сетевых адаптеров
 	contactRepo := sqlite.NewContactRepo(db)
 	groupRepo := sqlite.NewGroupRepo(db)
 	contactCache := memory.NewContactCache()
 	apiClient := network.NewRandomUserClient(cfg.RandomUserAPIURL, time.Duration(cfg.NetworkTimeoutSec)*time.Second)
 
-	// 4. Инициализация бизнес-сервисов и конкурентного пула воркеров (Недели 6, 10)
+	// 4. Инициализация бизнес-сервисов и конкурентного пула воркеров
 	contactService := service.NewContactService(
 		contactRepo,
 		groupRepo,

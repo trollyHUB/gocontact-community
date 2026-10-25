@@ -1,5 +1,7 @@
 # 📇 GoContact Studio Community Edition
 
+[![CI](https://github.com/trollyHUB/gocontact-community/actions/workflows/ci.yml/badge.svg)](https://github.com/trollyHUB/gocontact-community/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/trollyHUB/gocontact-community?color=brightgreen)](https://github.com/trollyHUB/gocontact-community/releases/latest)
 [![Go Version](https://img.shields.io/badge/Go-1.27+-00ADD8?style=flat&logo=go)](https://golang.org)
 [![GUI Framework](https://img.shields.io/badge/GUI-Fyne%20v2.8-blue)](https://fyne.io)
 [![Database](https://img.shields.io/badge/Database-SQLite%20(Pure%20Go)-lightgrey?logo=sqlite)](https://modernc.org/sqlite)
