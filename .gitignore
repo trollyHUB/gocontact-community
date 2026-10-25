@@ -1,0 +1,68 @@
+# Binaries and executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# Go workspace file
+go.work
+go.work.sum
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Database files & backups
+data/
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Log files and temporary files
+*.log
+*.tmp
+
+# Git merge conflict artifacts
+*.orig
+*.rej
+.merge_file_*
+
+# Sensitive secrets and environment configuration
+.env
+.env.local
+.env.*
+*.pem
+*.key
+*.pfx
+*.crt
+
+# Confidential roadmap, ADRs and internal blueprints (stored in private vault)
+docs/roadmap/
+docs/adr/
+docs/07_FUTURE_ROADMAP_V1.md
+docs/08_STRATEGIC_ARCHITECTURE_AND_STACK_BLUEPRINT.md
+.agents/
+tools/
+AGENTS.md
+**/AGENTS.md

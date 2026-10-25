@@ -1,0 +1,17 @@
+#!/bin/sh
+# GoContact Community — Pre-Push Test & Leak Verification Hook
+
+echo "[HOOK: pre-push] Running full test suite before pushing to GitHub..."
+
+# Run Go tests
+go test -v -count=1 ./...
+TEST_STATUS=$?
+
+if [ $TEST_STATUS -ne 0 ]; then
+    echo "❌ [PRE-PUSH ERROR] Go test suite failed! Push aborted."
+    echo "   Ensure all unit and integration tests pass before pushing."
+    exit 1
+fi
+
+echo "✅ [HOOK: pre-push] Test suite passed (100% OK). Push proceeding."
+exit 0

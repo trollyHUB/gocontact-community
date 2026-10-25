@@ -1,0 +1,7 @@
+#!/bin/sh
+# GoContact Community — Post-Merge Dependency Sync Hook
+
+echo "[HOOK: post-merge] Running go mod tidy after merge/pull..."
+go mod tidy
+echo "✅ [HOOK: post-merge] Dependencies synchronized."
+exit 0

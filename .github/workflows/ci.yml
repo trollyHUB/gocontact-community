@@ -1,0 +1,46 @@
+name: GoContact Studio CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  verify-architecture-and-docs:
+    name: Clean Architecture & Roadmap Docs Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+
+      - name: Verify Clean Architecture & Package Test Coverage via MCP Tool
+        run: |
+          echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"check_clean_architecture","arguments":{}}}' | go run ./tools/gocontact-mcp
+
+      - name: Run Non-UI Core Package Tests with Race Detector
+        run: |
+          go test -v -race ./assets/... ./internal/config/... ./internal/domain/... ./internal/infrastructure/... ./internal/repository/... ./internal/service/... ./tools/...
+
+  windows-full-test-and-build:
+    name: Windows Full Suite & PE Build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+
+      - name: Run Full Unit, Integration & Headless Fyne UI Tests
+        run: go test -v -count=1 ./...
+
+      - name: Build Windows Executable (-ldflags="-s -w")
+        run: go build -ldflags="-s -w" -o addressbook.exe ./cmd/addressbook

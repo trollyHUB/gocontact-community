@@ -1,0 +1,39 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Садыков;Нурлан;Канатович;;
+FN:Садыков Нурлан Канатович
+ORG:Kaspi.kz
+TITLE:Backend Lead
+TEL;TYPE=CELL,VOICE:+7 (701) 311-22-33
+TEL;TYPE=WORK,VOICE:+7 (727) 356-00-11
+EMAIL;TYPE=INTERNET:n.sadykov@kaspi.kz
+ADR;TYPE=HOME:;;ул. Наурызбай батыра\, 154;Алматы;;050013;Казахстан
+NOTE:Эксперт по высоконагруженным платёжным системам и микросервисам на Go
+REV:20261022T184000Z
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+N:Ахметова;Диана;Руслановна;;
+FN:Ахметова Диана Руслановна
+ORG:Freedom Holding
+TITLE:Lead Data Scientist
+TEL;TYPE=CELL,VOICE:+7 (707) 455-66-77
+TEL;TYPE=WORK,VOICE:+7 (717) 299-88-77
+EMAIL;TYPE=INTERNET:d.akhmetova@freedom.kz
+ADR;TYPE=HOME:;;ул. Сыганак\, 17;Астана;;010000;Казахстан
+NOTE:Аналитика больших данных и скоринговых графовых моделей
+REV:20261022T184000Z
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+N:Нурпеисова;Алия;Талгатовна;;
+FN:Нурпеисова Алия Талгатовна
+ORG:АО «НИТ» (GovTech)
+TITLE:Главный системный архитектор
+TEL;TYPE=CELL,VOICE:+7 (705) 812-90-00
+TEL;TYPE=WORK,VOICE:+7 (717) 270-11-22
+EMAIL;TYPE=INTERNET:a.nurpeisova@nitec.kz
+ADR;TYPE=HOME:;;пр. Мангилик Ел\, 8;Астана;;010000;Казахстан
+NOTE:Проектирование государственных информационных систем и интеграционных шлюзов
+REV:20261022T184000Z
+END:VCARD

@@ -1,0 +1,170 @@
+{
+  "app_name": "GoContact Studio",
+  "version": "0.1.0",
+  "exported_at": "2026-10-22T18:40:00Z",
+  "total_count": 6,
+  "contacts": [
+    {
+      "id": 101,
+      "first_name": "Нурлан",
+      "last_name": "Садыков",
+      "middle_name": "Канатович",
+      "phone": "+7 (701) 311-22-33",
+      "work_phone": "+7 (727) 356-00-11",
+      "phone_type": "mobile",
+      "email": "n.sadykov@kaspi.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Backend Lead",
+      "address": {
+        "country": "Казахстан",
+        "city": "Алматы",
+        "street": "ул. Наурызбай батыра, 154",
+        "postal_code": "050013"
+      },
+      "birthday": "12.04.1993",
+      "group_id": 2,
+      "is_favorite": true,
+      "tags": ["golang", "fintech", "highload"],
+      "notes": "Эксперт по высоконагруженным платёжным системам и микросервисам на Go",
+      "audit": {
+        "created_at": "2026-10-22T12:00:00Z",
+        "updated_at": "2026-10-22T18:00:00Z"
+      }
+    },
+    {
+      "id": 102,
+      "first_name": "Диана",
+      "last_name": "Ахметова",
+      "middle_name": "Руслановна",
+      "phone": "+7 (707) 455-66-77",
+      "work_phone": "+7 (717) 299-88-77",
+      "phone_type": "work",
+      "email": "d.akhmetova@freedom.kz",
+      "company": "Freedom Holding",
+      "job_title": "Lead Data Scientist",
+      "address": {
+        "country": "Казахстан",
+        "city": "Астана",
+        "street": "ул. Сыганак, 17",
+        "postal_code": "010000"
+      },
+      "birthday": "08.08.1997",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": ["ml", "analytics", "python"],
+      "notes": "Аналитика больших данных и скоринговых графовых моделей",
+      "audit": {
+        "created_at": "2026-10-22T12:05:00Z",
+        "updated_at": "2026-10-22T18:05:00Z"
+      }
+    },
+    {
+      "id": 103,
+      "first_name": "Санжар",
+      "last_name": "Жумабаев",
+      "middle_name": "Берикович",
+      "phone": "+7 (702) 777-88-99",
+      "work_phone": "",
+      "phone_type": "mobile",
+      "email": "sanzhar@indrive.com",
+      "company": "inDrive",
+      "job_title": "Senior Mobile Engineer",
+      "address": {
+        "country": "Казахстан",
+        "city": "Алматы",
+        "street": "пр. Абая, 52",
+        "postal_code": "050008"
+      },
+      "birthday": "21.01.1996",
+      "group_id": 3,
+      "is_favorite": true,
+      "tags": ["friends", "mobile", "flutter"],
+      "notes": "Друг по спортивному клубу и совместным хакатонам",
+      "audit": {
+        "created_at": "2026-10-22T12:10:00Z",
+        "updated_at": "2026-10-22T18:10:00Z"
+      }
+    },
+    {
+      "id": 104,
+      "first_name": "Алия",
+      "last_name": "Нурпеисова",
+      "middle_name": "Талгатовна",
+      "phone": "+7 (705) 812-90-00",
+      "work_phone": "+7 (717) 270-11-22",
+      "phone_type": "work",
+      "email": "a.nurpeisova@nitec.kz",
+      "company": "АО «НИТ» (GovTech)",
+      "job_title": "Главный системный архитектор",
+      "address": {
+        "country": "Казахстан",
+        "city": "Астана",
+        "street": "пр. Мангилик Ел, 8",
+        "postal_code": "010000"
+      },
+      "birthday": "19.10.1994",
+      "group_id": 4,
+      "is_favorite": true,
+      "tags": ["vip", "govtech", "architecture"],
+      "notes": "Проектирование государственных информационных систем и интеграционных шлюзов",
+      "audit": {
+        "created_at": "2026-10-22T12:15:00Z",
+        "updated_at": "2026-10-22T18:15:00Z"
+      }
+    },
+    {
+      "id": 105,
+      "first_name": "Максим",
+      "last_name": "Белов",
+      "middle_name": "Игоревич",
+      "phone": "+7 (777) 610-44-55",
+      "work_phone": "+7 (727) 244-55-66",
+      "phone_type": "work",
+      "email": "m.belov@kolesa.kz",
+      "company": "Kolesa Group",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "country": "Казахстан",
+        "city": "Алматы",
+        "street": "ул. Шевченко, 157/4",
+        "postal_code": "050009"
+      },
+      "birthday": "04.11.1991",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": ["devops", "kubernetes", "cloud"],
+      "notes": "Знакомство с конференции Kolesa Conf — инфраструктура и кластеры Kubernetes",
+      "audit": {
+        "created_at": "2026-10-22T12:20:00Z",
+        "updated_at": "2026-10-22T18:20:00Z"
+      }
+    },
+    {
+      "id": 106,
+      "first_name": "Ержан",
+      "last_name": "Тажибаев",
+      "middle_name": "Кайратович",
+      "phone": "+7 (708) 512-33-44",
+      "work_phone": "+7 (721) 241-00-99",
+      "phone_type": "work",
+      "email": "e.tazhibaev@erg.kz",
+      "company": "Eurasian Resources Group",
+      "job_title": "Директор по цифровизации",
+      "address": {
+        "country": "Казахстан",
+        "city": "Караганда",
+        "street": "пр. Бухар-Жырау, 49",
+        "postal_code": "100000"
+      },
+      "birthday": "29.09.1988",
+      "group_id": 4,
+      "is_favorite": true,
+      "tags": ["vip", "industry", "iot"],
+      "notes": "Ключевой партнёр по проектам промышленного интернета вещей (IIoT)",
+      "audit": {
+        "created_at": "2026-10-22T12:25:00Z",
+        "updated_at": "2026-10-22T18:25:00Z"
+      }
+    }
+  ]
+}

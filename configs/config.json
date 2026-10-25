@@ -1,0 +1,14 @@
+{
+  "app_name": "GoContact Studio — Адресная книга",
+  "version": "1.0.0",
+  "database_path": "data/addressbook.db",
+  "backup_dir": "data/backups",
+  "auto_backup_minutes": 10,
+  "theme": "dark",
+  "window_width": 1240,
+  "window_height": 780,
+  "network_timeout_sec": 8,
+  "random_user_api_url": "https://randomuser.me/api/",
+  "local_api_port": 8089,
+  "worker_pool_size": 4
+}

@@ -1,0 +1,102 @@
+GoContact Studio
+Local-First Personal CRM & Social Graph Platform
+https://github.com/trollyHUB/gocontact-studio
+
+Copyright (C) 2026 Tolegen Manassov (GitHub: trollyHUB) <tolegen.manasov05@gmail.com>
+All rights reserved, except as expressly granted below.
+
+=====================================================================
+1. LICENSING MODEL (DUAL LICENSE)
+=====================================================================
+
+This program is DUAL-LICENSED. You may use it under ONE of:
+
+  (A) GNU Affero General Public License, version 3 ONLY
+      (SPDX-License-Identifier: AGPL-3.0-only).
+      Full text: see the file "LICENSE" in this repository.
+
+  (B) A separate written GoContact Studio Commercial License
+      purchased from the Copyright Holder.
+      Terms overview: see the file "LICENSE-COMMERCIAL.md".
+
+If you have not signed a Commercial License with the Copyright Holder,
+your ONLY right to use, modify, or distribute this program comes from
+the GNU AGPL v3 (option A), and all its conditions apply to you,
+including Section 13 (Remote Network Interaction).
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+=====================================================================
+2. ADDITIONAL TERMS UNDER AGPL v3 SECTION 7
+=====================================================================
+
+As permitted by Section 7 of the GNU AGPL v3, the following
+additional terms apply to this program:
+
+  7(a) Additional Permissions / Plugin Exception.
+       Independent plugins and extensions communicating solely
+       through published interfaces (Plugin ABI, MCP, REST, CardDAV)
+       are granted additional permissions under "PLUGIN_EXCEPTION.md".
+
+  7(b) Preservation of Legal Notices and Author Attributions.
+       You must keep intact, in all copies and in all modified
+       versions: (i) this NOTICE file; (ii) all copyright notices
+       and SPDX license headers in source files; and (iii) the
+       "About" dialog / "--version" output attribution line:
+         "Based on GoContact Studio by Tolegen Manassov (trollyHUB)
+          - https://github.com/trollyHUB/gocontact-studio"
+       Modified versions may ADD their own copyright lines but may
+       not remove or obscure existing ones.
+
+  7(c) Marking of Modified Versions.
+       Modified versions must be clearly marked as modified and
+       must not be represented as the original GoContact Studio.
+
+  7(e) Trademarks.
+       This license does NOT grant any right to use the names
+       "GoContact Studio", "GoContact", the GoContact Studio logo,
+       or any confusingly similar marks. Trademark use is governed
+       exclusively by the file "TRADEMARK.md".
+
+  7(f) Indemnification.
+       Anyone who conveys this program (or modified versions) with
+       contractual assumptions of liability to recipients must
+       indemnify the Licensor and authors for any liability that
+       those contractual assumptions directly impose.
+
+=====================================================================
+3. LICENSE HISTORY (IMPORTANT)
+=====================================================================
+
+  - Git tag v0.1.0 and all commits before the license change commit
+    were published under the MIT License. Those exact historical
+    copies remain available under MIT; this cannot be revoked.
+  - Every commit AFTER the license change commit (v0.2.0-dev and all
+    later versions) is licensed ONLY under the dual model above
+    (AGPL-3.0-only OR Commercial License).
+  - New features, modules and documentation authored after the change
+    (Social Graph, Personal CRM, Chat Hub, Sync, AI/MCP, Wasm plugins,
+    React/TypeScript web UI, the 80-volume specification suite in
+    docs/roadmap/ and ADR-0004..ADR-0016) were never released under
+    MIT and are NOT available under MIT.
+
+=====================================================================
+4. CONTRIBUTIONS
+=====================================================================
+
+External contributions are accepted ONLY under the GoContact Studio
+Contributor License Agreement (CLA.md), which allows the Copyright
+Holder to keep offering the dual license.
+
+=====================================================================
+5. THIRD-PARTY COMPONENTS
+=====================================================================
+
+This program includes third-party open-source components that remain
+under their own licenses. See "THIRD_PARTY_NOTICES.md".
+
+Contact (licensing, trademarks, security):
+  tolegen.manasov05@gmail.com

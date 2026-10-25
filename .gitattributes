@@ -1,0 +1,24 @@
+# Auto-detect text files and normalize line endings to LF (cross-platform Windows & Linux)
+* text=auto eol=lf
+
+# Go sources & documentation diff drivers
+*.go text diff=golang
+*.md text diff=markdown
+*.json text
+*.csv text
+*.vcf text
+Makefile text
+
+# Binary assets (exclude from textual diffs and line conversion)
+*.png binary -diff
+*.ico binary -diff
+*.db binary -diff
+*.exe binary -diff
+*.pdf binary -diff
+
+# GitHub Linguist — treat large datasets and license files as vendored/documentation
+assets/sample_contacts.json linguist-vendored
+assets/sample_contacts.csv linguist-vendored
+assets/sample_contacts.vcf linguist-vendored
+assets/import_stress_50.json linguist-vendored
+licenses/* linguist-documentation

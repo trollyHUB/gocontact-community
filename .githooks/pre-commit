@@ -1,0 +1,49 @@
+#!/bin/sh
+# GoContact Community — Anti-Leak & Pre-Commit Quality Gate Hook
+
+echo "[HOOK: pre-commit] Verifying staged files..."
+
+# 1. Anti-Leak Sentinel: prevent confidential files from ever being added or modified
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+LEAK_PATTERNS="docs/roadmap docs/adr 07_FUTURE_ROADMAP 08_STRATEGIC .agents tools AGENTS.md 06_DEFENSE_GUIDE 05_ROADMAP_AND_STAGES .env id_rsa"
+
+for file in $STAGED_FILES; do
+    for pattern in $LEAK_PATTERNS; do
+        case "$file" in
+            *"$pattern"*)
+                echo "❌ [SECURITY ALERT] Attempting to commit confidential IP or secret: $file"
+                echo "   This file is strictly forbidden in the public community repository!"
+                echo "   Aborting commit."
+                exit 1
+                ;;
+        esac
+    done
+done
+
+# 2. Go Format Check on staged .go files
+STAGED_GO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$')
+if [ -n "$STAGED_GO_FILES" ]; then
+    UNFORMATTED=$(gofmt -l $STAGED_GO_FILES)
+    if [ -n "$UNFORMATTED" ]; then
+        echo "⚠️ [FORMAT WARNING] The following Go files require 'gofmt -w':"
+        echo "$UNFORMATTED"
+        echo "Run 'gofmt -w <file>' before committing."
+        exit 1
+    fi
+fi
+
+# 3. Clean Architecture: verify zero external imports in internal/domain
+DOMAIN_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '^internal/domain/.*\.go$')
+if [ -n "$DOMAIN_FILES" ]; then
+    FORBIDDEN_IMPORTS=$(grep -E '("database/sql"|"fyne.io/|"net/http"|"modernc.org/|internal/)' $DOMAIN_FILES 2>/dev/null)
+    if [ -n "$FORBIDDEN_IMPORTS" ]; then
+        echo "❌ [CLEAN ARCHITECTURE ERROR] Forbidden import detected in internal/domain:"
+        echo "$FORBIDDEN_IMPORTS"
+        echo "internal/domain must have 0 external or infrastructure dependencies!"
+        exit 1
+    fi
+fi
+
+echo "✅ [HOOK: pre-commit] All checks passed cleanly."
+exit 0
