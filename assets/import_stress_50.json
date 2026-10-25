@@ -1,0 +1,1249 @@
+{
+  "app_name": "GoContact Studio / Community",
+  "version": "1.0",
+  "exported_at": "2026-10-25T12:00:00Z",
+  "total_count": 50,
+  "contacts": [
+    {
+      "first_name": "Бауржан",
+      "last_name": "Алиев",
+      "middle_name": "Кайратович",
+      "phone": "+7 (703) 117-23-29",
+      "phone_type": "work",
+      "email": "user1@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 4",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050001"
+      },
+      "birthday": "02.02.1981",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "fintech",
+        "mobile"
+      ],
+      "notes": "Синтетический контакт #1 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Асель",
+      "last_name": "Ким",
+      "middle_name": "Берикович",
+      "phone": "+7 (706) 134-36-48",
+      "work_phone": "+7 (727) 3100222",
+      "phone_type": "home",
+      "email": "user2@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 8",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050002"
+      },
+      "birthday": "03.03.1982",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "mobile",
+        "security"
+      ],
+      "notes": "Синтетический контакт #2 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Серик",
+      "last_name": "Утепов",
+      "middle_name": "Ержанович",
+      "phone": "+7 (709) 151-49-67",
+      "phone_type": "other",
+      "email": "user3@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 12",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050003"
+      },
+      "birthday": "04.04.1983",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "devops",
+        "investor",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #3 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Диана",
+      "last_name": "Ибрагимов",
+      "middle_name": "Арманович",
+      "phone": "+7 (712) 168-62-86",
+      "work_phone": "+7 (727) 3100444",
+      "phone_type": "mobile",
+      "email": "user4@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 16",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050004"
+      },
+      "birthday": "05.05.1984",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "database",
+        "golang"
+      ],
+      "notes": "Синтетический контакт #4 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Алибек",
+      "last_name": "Тайжанов",
+      "middle_name": "Маратович",
+      "phone": "+7 (715) 185-75-16",
+      "phone_type": "work",
+      "email": "user5@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 20",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050005"
+      },
+      "birthday": "06.06.1985",
+      "group_id": 2,
+      "is_favorite": true,
+      "tags": [
+        "investor",
+        "ai"
+      ],
+      "notes": "Синтетический контакт #5 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Зарина",
+      "last_name": "Садыков",
+      "middle_name": "Канатович",
+      "phone": "+7 (718) 202-88-35",
+      "work_phone": "+7 (727) 3100666",
+      "phone_type": "home",
+      "email": "user6@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 24",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050006"
+      },
+      "birthday": "07.07.1986",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "startup",
+        "devops",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #6 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Ербол",
+      "last_name": "Сарсенов",
+      "middle_name": "Нурланович",
+      "phone": "+7 (721) 219-12-54",
+      "phone_type": "other",
+      "email": "user7@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 28",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050007"
+      },
+      "birthday": "08.08.1987",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "cloud",
+        "partner"
+      ],
+      "notes": "Синтетический контакт #7 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Арайлым",
+      "last_name": "Кузнецов",
+      "middle_name": "Болатович",
+      "phone": "+7 (724) 236-25-73",
+      "work_phone": "+7 (727) 3100888",
+      "phone_type": "mobile",
+      "email": "user8@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 32",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050008"
+      },
+      "birthday": "09.09.1988",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "ai",
+        "startup"
+      ],
+      "notes": "Синтетический контакт #8 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Данияр",
+      "last_name": "Байжанов",
+      "middle_name": "Талгатович",
+      "phone": "+7 (727) 253-38-92",
+      "phone_type": "work",
+      "email": "user9@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 36",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050009"
+      },
+      "birthday": "10.10.1989",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "backend",
+        "fintech",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #9 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Жанна",
+      "last_name": "Манасов",
+      "middle_name": "Серикович",
+      "phone": "+7 (730) 270-51-22",
+      "work_phone": "+7 (727) 3101110",
+      "phone_type": "home",
+      "email": "user10@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 40",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050010"
+      },
+      "birthday": "11.11.1990",
+      "group_id": 3,
+      "is_favorite": true,
+      "tags": [
+        "security",
+        "backend"
+      ],
+      "notes": "Синтетический контакт #10 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Олжас",
+      "last_name": "Омаров",
+      "middle_name": "Кайратович",
+      "phone": "+7 (733) 287-64-41",
+      "phone_type": "other",
+      "email": "user11@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 44",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050011"
+      },
+      "birthday": "12.12.1991",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "partner",
+        "database"
+      ],
+      "notes": "Синтетический контакт #11 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Аида",
+      "last_name": "Бакиров",
+      "middle_name": "Берикович",
+      "phone": "+7 (736) 304-77-60",
+      "work_phone": "+7 (727) 3101332",
+      "phone_type": "mobile",
+      "email": "user12@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 48",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050012"
+      },
+      "birthday": "13.01.1992",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "vip",
+        "vip",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #12 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Айгерим",
+      "last_name": "Смагулов",
+      "middle_name": "Ержанович",
+      "phone": "+7 (739) 321-90-79",
+      "phone_type": "work",
+      "email": "user13@example.kz",
+      "company": "Astana Hub",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 52",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050013"
+      },
+      "birthday": "14.02.1993",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "golang",
+        "cloud"
+      ],
+      "notes": "Синтетический контакт #13 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Динара",
+      "last_name": "Мусин",
+      "middle_name": "Арманович",
+      "phone": "+7 (742) 338-14-98",
+      "work_phone": "+7 (727) 3101554",
+      "phone_type": "home",
+      "email": "user14@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 56",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050014"
+      },
+      "birthday": "15.03.1994",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "fintech",
+        "mobile"
+      ],
+      "notes": "Синтетический контакт #14 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Нурсултан",
+      "last_name": "Жумабаев",
+      "middle_name": "Маратович",
+      "phone": "+7 (745) 355-27-28",
+      "phone_type": "other",
+      "email": "user15@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 60",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050015"
+      },
+      "birthday": "16.04.1995",
+      "group_id": 4,
+      "is_favorite": true,
+      "tags": [
+        "mobile",
+        "security",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #15 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Малика",
+      "last_name": "Рахимов",
+      "middle_name": "Канатович",
+      "phone": "+7 (748) 372-40-47",
+      "work_phone": "+7 (727) 3101776",
+      "phone_type": "mobile",
+      "email": "user16@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 64",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050016"
+      },
+      "birthday": "17.05.1996",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "devops",
+        "investor"
+      ],
+      "notes": "Синтетический контакт #16 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Азамат",
+      "last_name": "Искаков",
+      "middle_name": "Нурланович",
+      "phone": "+7 (751) 389-53-66",
+      "phone_type": "work",
+      "email": "user17@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 68",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050017"
+      },
+      "birthday": "18.06.1997",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "database",
+        "golang"
+      ],
+      "notes": "Синтетический контакт #17 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Камила",
+      "last_name": "Досанов",
+      "middle_name": "Болатович",
+      "phone": "+7 (754) 406-66-85",
+      "work_phone": "+7 (727) 3101998",
+      "phone_type": "home",
+      "email": "user18@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 72",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050018"
+      },
+      "birthday": "19.07.1998",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "investor",
+        "ai",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #18 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Тимур",
+      "last_name": "Сулейменов",
+      "middle_name": "Талгатович",
+      "phone": "+7 (757) 423-79-15",
+      "phone_type": "other",
+      "email": "user19@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 76",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050019"
+      },
+      "birthday": "20.08.1999",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "startup",
+        "devops"
+      ],
+      "notes": "Синтетический контакт #19 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Индира",
+      "last_name": "Ахметов",
+      "middle_name": "Серикович",
+      "phone": "+7 (760) 440-92-34",
+      "work_phone": "+7 (727) 3102220",
+      "phone_type": "mobile",
+      "email": "user20@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 80",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050020"
+      },
+      "birthday": "21.09.2000",
+      "group_id": 1,
+      "is_favorite": true,
+      "tags": [
+        "cloud",
+        "partner"
+      ],
+      "notes": "Синтетический контакт #20 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Галымжан",
+      "last_name": "Алиев",
+      "middle_name": "Кайратович",
+      "phone": "+7 (763) 457-16-53",
+      "phone_type": "work",
+      "email": "user21@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 84",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050021"
+      },
+      "birthday": "22.10.2001",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "ai",
+        "startup",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #21 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Гульнара",
+      "last_name": "Ким",
+      "middle_name": "Берикович",
+      "phone": "+7 (766) 474-29-72",
+      "work_phone": "+7 (727) 3102442",
+      "phone_type": "home",
+      "email": "user22@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 88",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050022"
+      },
+      "birthday": "23.11.2002",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "backend",
+        "fintech"
+      ],
+      "notes": "Синтетический контакт #22 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Марат",
+      "last_name": "Утепов",
+      "middle_name": "Ержанович",
+      "phone": "+7 (769) 491-42-91",
+      "phone_type": "other",
+      "email": "user23@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 92",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050023"
+      },
+      "birthday": "24.12.2003",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "security",
+        "backend"
+      ],
+      "notes": "Синтетический контакт #23 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Анель",
+      "last_name": "Ибрагимов",
+      "middle_name": "Арманович",
+      "phone": "+7 (772) 508-55-21",
+      "work_phone": "+7 (727) 3102664",
+      "phone_type": "mobile",
+      "email": "user24@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 96",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050024"
+      },
+      "birthday": "25.01.2004",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "partner",
+        "database",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #24 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Чингиз",
+      "last_name": "Тайжанов",
+      "middle_name": "Маратович",
+      "phone": "+7 (775) 525-68-40",
+      "phone_type": "work",
+      "email": "user25@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 100",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050025"
+      },
+      "birthday": "26.02.1980",
+      "group_id": 2,
+      "is_favorite": true,
+      "tags": [
+        "vip",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #25 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Руслан",
+      "last_name": "Садыков",
+      "middle_name": "Канатович",
+      "phone": "+7 (778) 542-81-59",
+      "work_phone": "+7 (727) 3102886",
+      "phone_type": "home",
+      "email": "user26@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 104",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050026"
+      },
+      "birthday": "27.03.1981",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "golang",
+        "cloud"
+      ],
+      "notes": "Синтетический контакт #26 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Асхат",
+      "last_name": "Сарсенов",
+      "middle_name": "Нурланович",
+      "phone": "+7 (781) 559-94-78",
+      "phone_type": "other",
+      "email": "user27@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 108",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050027"
+      },
+      "birthday": "28.04.1982",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "fintech",
+        "mobile",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #27 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Сабина",
+      "last_name": "Кузнецов",
+      "middle_name": "Болатович",
+      "phone": "+7 (784) 576-18-97",
+      "work_phone": "+7 (727) 3103108",
+      "phone_type": "mobile",
+      "email": "user28@example.kz",
+      "company": "Astana Hub",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 112",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050028"
+      },
+      "birthday": "01.05.1983",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "mobile",
+        "security"
+      ],
+      "notes": "Синтетический контакт #28 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Куаныш",
+      "last_name": "Байжанов",
+      "middle_name": "Талгатович",
+      "phone": "+7 (787) 593-31-27",
+      "phone_type": "work",
+      "email": "user29@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 116",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050029"
+      },
+      "birthday": "02.06.1984",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "devops",
+        "investor"
+      ],
+      "notes": "Синтетический контакт #29 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Арман",
+      "last_name": "Манасов",
+      "middle_name": "Серикович",
+      "phone": "+7 (790) 610-44-46",
+      "work_phone": "+7 (727) 3103330",
+      "phone_type": "home",
+      "email": "user30@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 120",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050030"
+      },
+      "birthday": "03.07.1985",
+      "group_id": 3,
+      "is_favorite": true,
+      "tags": [
+        "database",
+        "golang",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #30 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Бауржан",
+      "last_name": "Омаров",
+      "middle_name": "Кайратович",
+      "phone": "+7 (793) 627-57-65",
+      "phone_type": "other",
+      "email": "user31@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 124",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050031"
+      },
+      "birthday": "04.08.1986",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "investor",
+        "ai"
+      ],
+      "notes": "Синтетический контакт #31 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Асель",
+      "last_name": "Бакиров",
+      "middle_name": "Берикович",
+      "phone": "+7 (796) 644-70-84",
+      "work_phone": "+7 (727) 3103552",
+      "phone_type": "mobile",
+      "email": "user32@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 128",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050032"
+      },
+      "birthday": "05.09.1987",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "startup",
+        "devops"
+      ],
+      "notes": "Синтетический контакт #32 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Серик",
+      "last_name": "Смагулов",
+      "middle_name": "Ержанович",
+      "phone": "+7 (700) 661-83-14",
+      "phone_type": "work",
+      "email": "user33@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 132",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050033"
+      },
+      "birthday": "06.10.1988",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "cloud",
+        "partner",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #33 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Диана",
+      "last_name": "Мусин",
+      "middle_name": "Арманович",
+      "phone": "+7 (703) 678-96-33",
+      "work_phone": "+7 (727) 3103774",
+      "phone_type": "home",
+      "email": "user34@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 136",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050034"
+      },
+      "birthday": "07.11.1989",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "ai",
+        "startup"
+      ],
+      "notes": "Синтетический контакт #34 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Алибек",
+      "last_name": "Жумабаев",
+      "middle_name": "Маратович",
+      "phone": "+7 (706) 695-20-52",
+      "phone_type": "other",
+      "email": "user35@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 140",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050035"
+      },
+      "birthday": "08.12.1990",
+      "group_id": 4,
+      "is_favorite": true,
+      "tags": [
+        "backend",
+        "fintech"
+      ],
+      "notes": "Синтетический контакт #35 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Зарина",
+      "last_name": "Рахимов",
+      "middle_name": "Канатович",
+      "phone": "+7 (709) 712-33-71",
+      "work_phone": "+7 (727) 3103996",
+      "phone_type": "mobile",
+      "email": "user36@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 144",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050036"
+      },
+      "birthday": "09.01.1991",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "security",
+        "backend",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #36 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Ербол",
+      "last_name": "Искаков",
+      "middle_name": "Нурланович",
+      "phone": "+7 (712) 729-46-90",
+      "phone_type": "work",
+      "email": "user37@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 148",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050037"
+      },
+      "birthday": "10.02.1992",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "partner",
+        "database"
+      ],
+      "notes": "Синтетический контакт #37 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Арайлым",
+      "last_name": "Досанов",
+      "middle_name": "Болатович",
+      "phone": "+7 (715) 746-59-20",
+      "work_phone": "+7 (727) 3104218",
+      "phone_type": "home",
+      "email": "user38@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 152",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050038"
+      },
+      "birthday": "11.03.1993",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "vip",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #38 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Данияр",
+      "last_name": "Сулейменов",
+      "middle_name": "Талгатович",
+      "phone": "+7 (718) 763-72-39",
+      "phone_type": "other",
+      "email": "user39@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 156",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050039"
+      },
+      "birthday": "12.04.1994",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "golang",
+        "cloud",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #39 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Жанна",
+      "last_name": "Ахметов",
+      "middle_name": "Серикович",
+      "phone": "+7 (721) 780-85-58",
+      "work_phone": "+7 (727) 3104440",
+      "phone_type": "mobile",
+      "email": "user40@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 160",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050040"
+      },
+      "birthday": "13.05.1995",
+      "group_id": 1,
+      "is_favorite": true,
+      "tags": [
+        "fintech",
+        "mobile"
+      ],
+      "notes": "Синтетический контакт #40 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Олжас",
+      "last_name": "Алиев",
+      "middle_name": "Кайратович",
+      "phone": "+7 (724) 797-98-77",
+      "phone_type": "work",
+      "email": "user41@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 164",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050041"
+      },
+      "birthday": "14.06.1996",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "mobile",
+        "security"
+      ],
+      "notes": "Синтетический контакт #41 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Аида",
+      "last_name": "Ким",
+      "middle_name": "Берикович",
+      "phone": "+7 (727) 814-22-96",
+      "work_phone": "+7 (727) 3104662",
+      "phone_type": "home",
+      "email": "user42@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 168",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050042"
+      },
+      "birthday": "15.07.1997",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "devops",
+        "investor",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #42 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Айгерим",
+      "last_name": "Утепов",
+      "middle_name": "Ержанович",
+      "phone": "+7 (730) 831-35-26",
+      "phone_type": "other",
+      "email": "user43@example.kz",
+      "company": "Astana Hub",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 172",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050043"
+      },
+      "birthday": "16.08.1998",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "database",
+        "golang"
+      ],
+      "notes": "Синтетический контакт #43 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Динара",
+      "last_name": "Ибрагимов",
+      "middle_name": "Арманович",
+      "phone": "+7 (733) 848-48-45",
+      "work_phone": "+7 (727) 3104884",
+      "phone_type": "mobile",
+      "email": "user44@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 176",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050044"
+      },
+      "birthday": "17.09.1999",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "investor",
+        "ai"
+      ],
+      "notes": "Синтетический контакт #44 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Нурсултан",
+      "last_name": "Тайжанов",
+      "middle_name": "Маратович",
+      "phone": "+7 (736) 865-61-64",
+      "phone_type": "work",
+      "email": "user45@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 180",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050045"
+      },
+      "birthday": "18.10.2000",
+      "group_id": 2,
+      "is_favorite": true,
+      "tags": [
+        "startup",
+        "devops",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #45 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Малика",
+      "last_name": "Садыков",
+      "middle_name": "Канатович",
+      "phone": "+7 (739) 882-74-83",
+      "work_phone": "+7 (727) 3105106",
+      "phone_type": "home",
+      "email": "user46@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Data Platform Engineer",
+      "address": {
+        "street": "ул. Абая, 184",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050046"
+      },
+      "birthday": "19.11.2001",
+      "group_id": 3,
+      "is_favorite": false,
+      "tags": [
+        "cloud",
+        "partner"
+      ],
+      "notes": "Синтетический контакт #46 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Азамат",
+      "last_name": "Сарсенов",
+      "middle_name": "Нурланович",
+      "phone": "+7 (742) 899-87-13",
+      "phone_type": "other",
+      "email": "user47@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Frontend Developer",
+      "address": {
+        "street": "ул. Абая, 188",
+        "city": "Павлодар",
+        "country": "Казахстан",
+        "postal_code": "050047"
+      },
+      "birthday": "20.12.2002",
+      "group_id": 4,
+      "is_favorite": false,
+      "tags": [
+        "ai",
+        "startup"
+      ],
+      "notes": "Синтетический контакт #47 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Камила",
+      "last_name": "Кузнецов",
+      "middle_name": "Болатович",
+      "phone": "+7 (745) 916-11-32",
+      "work_phone": "+7 (727) 3105328",
+      "phone_type": "mobile",
+      "email": "user48@example.kz",
+      "company": "Kaspi.kz",
+      "job_title": "DevOps Team Lead",
+      "address": {
+        "street": "ул. Абая, 192",
+        "city": "Алматы",
+        "country": "Казахстан",
+        "postal_code": "050048"
+      },
+      "birthday": "21.01.2003",
+      "group_id": 1,
+      "is_favorite": false,
+      "tags": [
+        "backend",
+        "fintech",
+        "vip"
+      ],
+      "notes": "Синтетический контакт #48 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Тимур",
+      "last_name": "Байжанов",
+      "middle_name": "Талгатович",
+      "phone": "+7 (748) 933-24-51",
+      "phone_type": "work",
+      "email": "user49@example.kz",
+      "company": "Astana Hub",
+      "job_title": "Product Designer",
+      "address": {
+        "street": "ул. Абая, 196",
+        "city": "Шымкент",
+        "country": "Казахстан",
+        "postal_code": "050049"
+      },
+      "birthday": "22.02.2004",
+      "group_id": 2,
+      "is_favorite": false,
+      "tags": [
+        "security",
+        "backend"
+      ],
+      "notes": "Синтетический контакт #49 для стресс-тестирования импорта."
+    },
+    {
+      "first_name": "Индира",
+      "last_name": "Манасов",
+      "middle_name": "Серикович",
+      "phone": "+7 (751) 950-37-70",
+      "work_phone": "+7 (727) 3105550",
+      "phone_type": "home",
+      "email": "user50@example.kz",
+      "company": "Kazakhtelecom",
+      "job_title": "Senior Software Engineer",
+      "address": {
+        "street": "ул. Абая, 200",
+        "city": "Актобе",
+        "country": "Казахстан",
+        "postal_code": "050000"
+      },
+      "birthday": "23.03.1980",
+      "group_id": 3,
+      "is_favorite": true,
+      "tags": [
+        "partner",
+        "database"
+      ],
+      "notes": "Синтетический контакт #50 для стресс-тестирования импорта."
+    }
+  ]
+}

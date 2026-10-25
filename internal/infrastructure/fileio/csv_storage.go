@@ -13,7 +13,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// CSVStorage реализует интерфейсы Exporter и Importer для табличного формата CSV (Неделя 7).
+// CSVStorage реализует интерфейсы Exporter и Importer для табличного формата CSV.
 type CSVStorage struct{}
 
 func NewCSVStorage() *CSVStorage {

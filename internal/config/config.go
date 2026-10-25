@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-// Config хранит конфигурационные параметры приложения (Неделя 14).
+// Config хранит конфигурационные параметры приложения.
 type Config struct {
 	AppName           string `json:"app_name"`
 	Version           string `json:"version"`

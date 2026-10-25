@@ -20,7 +20,9 @@ func NewVCardStorage() *VCardStorage {
 	return &VCardStorage{}
 }
 
-func (v *VCardStorage) FormatName() string    { return "vCard 3.0 (Электронная визитка .vcf)" }
+func (v *VCardStorage) FormatName() string {
+	return "vCard 3.0 (Электронная визитка .vcf)"
+}
 func (v *VCardStorage) FileExtension() string { return ".vcf" }
 
 // Import разбирает поток карточек vCard 3.0/4.0 (.vcf) и возвращает список контактов.

@@ -5,7 +5,7 @@ package domain
 
 import "time"
 
-// Количество базовых предустановленных групп (константа — Неделя 4).
+// Количество базовых предустановленных групп (константа ).
 const DefaultGroupsCount = 5
 
 const (
@@ -16,7 +16,7 @@ const (
 	GroupOther   int64 = 5
 )
 
-// Group представляет категорию/группу контактов (Неделя 5: struct).
+// Group представляет категорию/группу контактов.
 type Group struct {
 	ID           int64     `json:"id"`
 	Name         string    `json:"name"`
@@ -26,7 +26,7 @@ type Group struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
-// DefaultGroups возвращает массив фиксированной длины [DefaultGroupsCount]Group (Неделя 5: arrays).
+// DefaultGroups возвращает массив фиксированной длины [DefaultGroupsCount]Group.
 func DefaultGroups() [DefaultGroupsCount]Group {
 	now := time.Now()
 	return [DefaultGroupsCount]Group{
@@ -48,7 +48,7 @@ const (
 	SortByCreatedDesc SortBy = "created_desc"
 )
 
-// ContactFilter задаёт параметры поиска, фильтрации и сортировки (Неделя 12).
+// ContactFilter задаёт параметры поиска, фильтрации и сортировки.
 type ContactFilter struct {
 	Query        string // Поисковый запрос (ФИО, телефон, email, компания, город)
 	GroupID      int64  // 0 = все группы
@@ -63,6 +63,6 @@ type BookStats struct {
 	FavoriteContacts int            `json:"favorite_contacts"`
 	WithEmailCount   int            `json:"with_email_count"`
 	WithCompanyCount int            `json:"with_company_count"`
-	ByGroup          map[string]int `json:"by_group"` // Неделя 5: maps
+	ByGroup          map[string]int `json:"by_group"`
 	ByCity           map[string]int `json:"by_city"`
 }

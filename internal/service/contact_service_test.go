@@ -31,9 +31,9 @@ func TestContactService_ConcurrentBatchImportAndAudit(t *testing.T) {
 
 	batch := []*domain.Contact{
 		{FirstName: "Алия", LastName: "Касымова", Phone: "87011112233", Email: "aliya@test.kz", Address: domain.Address{City: "Алматы"}},
-		{FirstName: "Ерлан", LastName: "Нуров", Phone: "87022223344", Email: ""},                                                       // без email и адреса
-		{FirstName: "Дубликат", LastName: "Номера", Phone: "+7 (701) 111-22-33", Email: "dup@test.kz"},                                 // дубликат телефона
-		{FirstName: "", LastName: "Невалидный", Phone: "123", Email: "bad-email"},                                                      // невалидная запись
+		{FirstName: "Ерлан", LastName: "Нуров", Phone: "87022223344", Email: ""},                       // без email и адреса
+		{FirstName: "Дубликат", LastName: "Номера", Phone: "+7 (701) 111-22-33", Email: "dup@test.kz"}, // дубликат телефона
+		{FirstName: "", LastName: "Невалидный", Phone: "123", Email: "bad-email"},                      // невалидная запись
 	}
 
 	progressChan := make(chan float64, 10)

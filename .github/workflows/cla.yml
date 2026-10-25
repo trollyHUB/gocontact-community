@@ -23,6 +23,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path-to-signatures: "signatures/cla.json"
-          path-to-document: "https://github.com/trollyHUB/gocontact-studio/blob/main/CLA.md"
+          path-to-document: "https://github.com/trollyHUB/gocontact-community/blob/main/CLA.md"
           branch: "main"
           allowlist: "trollyHUB,dependabot[bot]"

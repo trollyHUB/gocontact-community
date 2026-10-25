@@ -13,7 +13,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// BackupScheduler управляет фоновым созданием резервных копий на базе select и time.Ticker (Неделя 10).
+// BackupScheduler управляет фоновым созданием резервных копий на базе select и time.Ticker.
 type BackupScheduler struct {
 	service        *ContactService
 	backupDir      string

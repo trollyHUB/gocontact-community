@@ -21,7 +21,7 @@ func labeledField(label string, field fyne.CanvasObject) fyne.CanvasObject {
 	return container.NewVBox(lbl, field)
 }
 
-// showContactFormDialog открывает прокручиваемое модальное окно создания или редактирования контакта (Неделя 9).
+// showContactFormDialog открывает прокручиваемое модальное окно создания или редактирования контакта.
 // Использование двухколоночной сетки и container.NewVScroll гарантирует отсутствие наложения кнопок в оконном режиме.
 func (u *AppUI) showContactFormDialog(existing *domain.Contact) {
 	isEdit := existing != nil

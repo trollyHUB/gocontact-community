@@ -17,7 +17,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// OpenAndMigrate открывает базу данных SQLite (или :memory:), настраивает PRAGMA и создаёт схему таблиц (Неделя 12).
+// OpenAndMigrate открывает базу данных SQLite (или :memory:), настраивает PRAGMA и создаёт схему таблиц.
 func OpenAndMigrate(dbPath string) (*sql.DB, error) {
 	var dsn string
 	if dbPath == ":memory:" {
@@ -128,7 +128,7 @@ func SeedDemoContactsIfEmpty(ctx context.Context, db *sql.DB) error {
 			GroupID: 2, FirstName: "Алексей", LastName: "Смирнов", MiddleName: "Игоревич",
 			Phone: "+7 (701) 555-01-99", WorkPhone: "+7 (727) 250-10-20", PhoneType: domain.PhoneMobile,
 			Email: "a.smirnov@techcorp.kz", Company: "TechCorp Kazakhstan", JobTitle: "Lead Go Developer",
-			Address: domain.Address{Country: "Казахстан", City: "Алматы", Street: "пр. Достык, 120", PostalCode: "050000"},
+			Address:  domain.Address{Country: "Казахстан", City: "Алматы", Street: "пр. Достык, 120", PostalCode: "050000"},
 			Birthday: "15.05.1994", Tags: []string{"golang", "backend", "teamlead"},
 			Notes: "Ведущий архитектор микросервисов и наставник по языку Go", IsFavorite: true,
 		},
@@ -136,7 +136,7 @@ func SeedDemoContactsIfEmpty(ctx context.Context, db *sql.DB) error {
 			GroupID: 2, FirstName: "Айгерим", LastName: "Омарова", MiddleName: "Сериковна",
 			Phone: "+7 (707) 234-56-78", PhoneType: domain.PhoneWork,
 			Email: "a.omarova@astanahub.kz", Company: "Astana Hub", JobTitle: "Product Manager",
-			Address: domain.Address{Country: "Казахстан", City: "Астана", Street: "пр. Мангилик Ел, 55/8", PostalCode: "010000"},
+			Address:  domain.Address{Country: "Казахстан", City: "Астана", Street: "пр. Мангилик Ел, 55/8", PostalCode: "010000"},
 			Birthday: "22.09.1996", Tags: []string{"product", "startup", "agile"},
 			Notes: "Курирует акселерационную программу ИТ-проектов", IsFavorite: true,
 		},
@@ -144,7 +144,7 @@ func SeedDemoContactsIfEmpty(ctx context.Context, db *sql.DB) error {
 			GroupID: 3, FirstName: "Данияр", LastName: "Ким", MiddleName: "Александрович",
 			Phone: "+7 (702) 998-77-66", PhoneType: domain.PhoneMobile,
 			Email: "d.kim@cloudops.io", Company: "CloudOps Studio", JobTitle: "DevOps Engineer",
-			Address: domain.Address{Country: "Казахстан", City: "Алматы", Street: "ул. Тимирязева, 42", PostalCode: "050040"},
+			Address:  domain.Address{Country: "Казахстан", City: "Алматы", Street: "ул. Тимирязева, 42", PostalCode: "050040"},
 			Birthday: "03.11.1995", Tags: []string{"devops", "kubernetes", "docker"},
 			Notes: "Вместе учились в университете, специалист по CI/CD", IsFavorite: false,
 		},
@@ -152,7 +152,7 @@ func SeedDemoContactsIfEmpty(ctx context.Context, db *sql.DB) error {
 			GroupID: 1, FirstName: "Марат", LastName: "Манасов", MiddleName: "Ерланович",
 			Phone: "+7 (777) 888-11-22", PhoneType: domain.PhoneMobile,
 			Email: "m.manassov@family.kz", Company: "КазМунайГаз", JobTitle: "Главный инженер",
-			Address: domain.Address{Country: "Казахстан", City: "Астана", Street: "ул. Кунаева, 14", PostalCode: "010000"},
+			Address:  domain.Address{Country: "Казахстан", City: "Астана", Street: "ул. Кунаева, 14", PostalCode: "010000"},
 			Birthday: "10.02.1972", Tags: []string{"семья", "родственники"},
 			Notes: "Семейный контакт, звонить в любое время", IsFavorite: true,
 		},
@@ -160,7 +160,7 @@ func SeedDemoContactsIfEmpty(ctx context.Context, db *sql.DB) error {
 			GroupID: 4, FirstName: "Елена", LastName: "Воронцова", MiddleName: "Дмитриевна",
 			Phone: "+7 (705) 444-33-22", WorkPhone: "+7 (717) 299-00-11", PhoneType: domain.PhoneWork,
 			Email: "e.vorontsova@fintech.kz", Company: "FinTech Bank", JobTitle: "CTO / Технический директор",
-			Address: domain.Address{Country: "Казахстан", City: "Алматы", Street: "пр. Аль-Фараби, 77/7", PostalCode: "050060"},
+			Address:  domain.Address{Country: "Казахстан", City: "Алматы", Street: "пр. Аль-Фараби, 77/7", PostalCode: "050060"},
 			Birthday: "18.07.1988", Tags: []string{"vip", "fintech", "cto"},
 			Notes: "Ключевой партнёр по банковским интеграциям и REST API", IsFavorite: true,
 		},
@@ -168,7 +168,7 @@ func SeedDemoContactsIfEmpty(ctx context.Context, db *sql.DB) error {
 			GroupID: 3, FirstName: "Тимур", LastName: "Бектуров", MiddleName: "Нурланович",
 			Phone: "+7 (708) 612-34-56", PhoneType: domain.PhoneMobile,
 			Email: "timur.b@gamedev.kz", Company: "Nomad Games", JobTitle: "UI/UX Designer",
-			Address: domain.Address{Country: "Казахстан", City: "Караганда", Street: "пр. Бухар-Жырау, 49", PostalCode: "100000"},
+			Address:  domain.Address{Country: "Казахстан", City: "Караганда", Street: "пр. Бухар-Жырау, 49", PostalCode: "100000"},
 			Birthday: "29.12.1999", Tags: []string{"design", "fyne", "ui"},
 			Notes: "Помогал с концептом цветовой схемы интерфейса", IsFavorite: false,
 		},

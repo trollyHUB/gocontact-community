@@ -14,7 +14,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-// buildSidebar создаёт левую навигационную панель групп/категорий и блок живой статистики БД (Неделя 9).
+// buildSidebar создаёт левую навигационную панель групп/категорий и блок живой статистики БД.
 func (u *AppUI) buildSidebar() fyne.CanvasObject {
 	header := widget.NewLabelWithStyle("КАТЕГОРИИ И ГРУППЫ", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
 

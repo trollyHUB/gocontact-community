@@ -16,7 +16,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// AvatarClient формирует и проверяет URL аватаров через внешние сервисы Gravatar / UI-Avatars (FR-5.1, Неделя 11).
+// AvatarClient формирует и проверяет URL аватаров через внешние сервисы Gravatar / UI-Avatars (FR-5.1).
 type AvatarClient struct {
 	httpClient *http.Client
 }

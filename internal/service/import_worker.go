@@ -12,7 +12,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// BatchImportSummary содержит итоговый отчёт параллельного импорта контактов (Неделя 10).
+// BatchImportSummary содержит итоговый отчёт параллельного импорта контактов.
 type BatchImportSummary struct {
 	TotalProcessed int
 	SuccessCount   int
@@ -33,7 +33,7 @@ type importResult struct {
 }
 
 // ImportBatchConcurrent параллельно валидирует, нормализует и сохраняет пачку контактов
-// с использованием goroutines, channels, sync.WaitGroup и select (Неделя 10: Конкурентное программирование).
+// с использованием goroutines, channels, sync.WaitGroup и select.
 func (s *ContactService) ImportBatchConcurrent(
 	ctx context.Context,
 	contacts []*domain.Contact,
@@ -146,15 +146,15 @@ type AuditIssue struct {
 
 // AuditReport содержит результаты многопоточного аудита адресной книги.
 type AuditReport struct {
-	TotalChecked       int
-	HealthyContacts    int
-	MissingEmailCount  int
+	TotalChecked        int
+	HealthyContacts     int
+	MissingEmailCount   int
 	MissingAddressCount int
 	MissingCompanyCount int
-	Issues             []AuditIssue
+	Issues              []AuditIssue
 }
 
-// AuditContactsConcurrent выполняет параллельную проверку качества заполнения карточек контактов (Неделя 10).
+// AuditContactsConcurrent выполняет параллельную проверку качества заполнения карточек контактов.
 func (s *ContactService) AuditContactsConcurrent(ctx context.Context) (*AuditReport, error) {
 	contacts, err := s.contactRepo.List(ctx, domain.ContactFilter{})
 	if err != nil {

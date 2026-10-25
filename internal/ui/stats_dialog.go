@@ -112,7 +112,7 @@ func (u *AppUI) renderAuditModal(report *service.AuditReport) {
 	dlg.Show()
 }
 
-// showLocalAPITesterDialog демонстрирует работу встроенного REST API сервера и HTTP-клиента (Неделя 11).
+// showLocalAPITesterDialog демонстрирует работу встроенного REST API сервера и HTTP-клиента.
 func (u *AppUI) showLocalAPITesterDialog() {
 	baseURL := u.apiServer.BaseURL()
 	urlLabel := widget.NewLabel(fmt.Sprintf("Локальный сервер запущен на: %s", baseURL))
@@ -160,26 +160,29 @@ func (u *AppUI) showLocalAPITesterDialog() {
 	)
 
 	content := container.NewBorder(topBar, nil, nil, nil, responseBox)
-	dlg := dialog.NewCustom("Панель тестирования REST API и HTTP-клиента (Неделя 11)", "Закрыть", content, u.mainWin)
+	dlg := dialog.NewCustom("Панель тестирования REST API и HTTP-клиента", "Закрыть", content, u.mainWin)
 	dlg.Resize(fyne.NewSize(720, 500))
 	dlg.Show()
 }
 
-// showAboutDialog выводит информацию о проекте и покрытии 15 недель курса.
+// showAboutDialog выводит информацию о программе и ключевых архитектурных возможностях.
 func (u *AppUI) showAboutDialog() {
-	info := `ИС «Адресная книга» (GoContact Studio v1.0)
-Разработано на языке Go (Golang) с графическим интерфейсом Fyne v2.
+	info := `GoContact Studio Community Edition (v0.1.0)
+Открытая платформа «Адресная книга» / Local-First Personal CRM.
+Разработано на языке Go с графическим интерфейсом Fyne v2.
 
-Реализованные модули (100% покрытие 15 недель):
-• Недели 4–5: Основы Go, структуры Contact/Address/Group, срезы, мапы, указатели.
-• Неделя 6: ООП в Go — методы, композиция (Struct Embedding), интерфейсы Repository / Exporter.
-• Неделя 7: Сериализация и файлы — экспорт/импорт JSON, CSV и электронных визиток vCard (.vcf).
-• Неделя 8: Собственные типы ошибок ValidationError, errors.Is / errors.As.
-• Неделя 9: Графический интерфейс Fyne v2 (Master-Detail, таблицы, списки, диалоги, темы).
-• Неделя 10: Конкурентность — Worker Pool на горутинах и каналах, RWMutex кэш, select + Ticker.
-• Неделя 11: Сеть — HTTP-клиент интеграции с REST API + встроенный локальный HTTP REST сервер.
-• Неделя 12: СУБД SQLite (режим WAL) — таблицы, индексы, INSERT, SELECT, UPDATE, DELETE, фильтрация.
-• Недели 13–14: Чистая архитектура (Clean Architecture), JSON-конфигурация и табличные Unit-тесты.`
+Архитектура и ключевые возможности:
+• Чистая архитектура (Clean Architecture) и паттерн MVP (Model-View-Presenter).
+• Встраиваемая реляционная база данных SQLite в высокопроизводительном режиме WAL.
+• Потокобезопасный In-Memory кэш с защитой через sync.RWMutex.
+• Пакетный многопоточный импорт через Worker Pool на горутинах и каналах.
+• Экспорт и импорт промышленных форматов: JSON, CSV и визитные карточки vCard 3.0 (.vcf).
+• Встроенный локальный HTTP REST API сервер (:8089) с поддержкой JSON-эндпоинтов.
+• Автоматический планировщик резервного копирования базы данных (select + time.Ticker).
+• Двухрежимная адаптивная тема оформления StudioTheme (Dark / Light).
+• Лицензия: GNU AGPL v3 с официальным исключением для плагинов (Plugin Exception).
+
+Copyright © 2026 Tolegen Manassov (trollyHUB).`
 
 	dialog.ShowInformation("О программе GoContact Studio", info, u.mainWin)
 }

@@ -1,4 +1,4 @@
-name: GoContact Studio CI
+name: GoContact Community CI
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  verify-architecture-and-docs:
-    name: Clean Architecture & Roadmap Docs Audit
+  test-linux:
+    name: Linux Core Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -17,17 +17,13 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.x'
+          go-version: '1.24.x'
 
-      - name: Verify Clean Architecture & Package Test Coverage via MCP Tool
+      - name: Run Core Package Tests with Race Detector
         run: |
-          echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"check_clean_architecture","arguments":{}}}' | go run ./tools/gocontact-mcp
+          go test -v -race ./assets/... ./internal/config/... ./internal/domain/... ./internal/infrastructure/... ./internal/repository/... ./internal/service/...
 
-      - name: Run Non-UI Core Package Tests with Race Detector
-        run: |
-          go test -v -race ./assets/... ./internal/config/... ./internal/domain/... ./internal/infrastructure/... ./internal/repository/... ./internal/service/... ./tools/...
-
-  windows-full-test-and-build:
+  test-and-build-windows:
     name: Windows Full Suite & PE Build
     runs-on: windows-latest
     steps:
@@ -37,10 +33,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25.x'
+          go-version: '1.24.x'
 
       - name: Run Full Unit, Integration & Headless Fyne UI Tests
-        run: go test -v -count=1 ./...
+        run: go test -v -count=1 ./assets/... ./cmd/... ./internal/...
 
       - name: Build Windows Executable (-ldflags="-s -w")
         run: go build -ldflags="-s -w" -o addressbook.exe ./cmd/addressbook

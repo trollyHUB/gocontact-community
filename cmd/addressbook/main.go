@@ -29,13 +29,13 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// 1. Загрузка конфигурации приложения (Неделя 14)
+	// 1. Загрузка конфигурации приложения
 	cfg, err := config.Load(defaultConfigPath)
 	if err != nil {
 		log.Printf("[WARN] используется конфигурация по умолчанию: %v", err)
 	}
 
-	// 2. Подключение к СУБД SQLite и выполнение миграций (Неделя 12)
+	// 2. Подключение к СУБД SQLite и выполнение миграций
 	db, err := sqlite.OpenAndMigrate(cfg.DatabasePath)
 	if err != nil {
 		log.Fatalf("[FATAL] ошибка инициализации базы данных: %v", err)
@@ -62,7 +62,7 @@ func main() {
 		cfg.WorkerPoolSize,
 	)
 
-	// 5. Запуск встроенного локального HTTP REST API сервера в фоновой горутине (Неделя 11)
+	// 5. Запуск встроенного локального HTTP REST API сервера в фоновой горутине
 	localAPIServer := network.NewLocalAPIServer(cfg.LocalAPIPort, contactRepo)
 	if err := localAPIServer.Start(); err != nil {
 		log.Printf("[WARN] не удалось запустить локальный REST API сервер: %v", err)
@@ -73,10 +73,10 @@ func main() {
 		_ = localAPIServer.Stop(shutdownCtx)
 	}()
 
-	// 6. Инициализация фонового планировщика автобэкапов на select + Ticker (Неделя 10)
+	// 6. Инициализация фонового планировщика автобэкапов на select + Ticker
 	backupScheduler := service.NewBackupScheduler(contactService, cfg.BackupDir, cfg.AutoBackupMinutes)
 
-	// 7. Инициализация и запуск графического интерфейса Fyne v2 (Неделя 9)
+	// 7. Инициализация и запуск графического интерфейса Fyne v2
 	appUI := ui.NewAppUI(cfg, defaultConfigPath, contactService, backupScheduler, localAPIServer)
 	backupScheduler.Start(ctx, appUI.NotifyBackup)
 

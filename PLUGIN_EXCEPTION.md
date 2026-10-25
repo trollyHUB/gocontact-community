@@ -1,6 +1,6 @@
 # 🔌 Исключение для плагинов GoContact Studio (Plugin Exception)
 
-* **Продукт:** GoContact Studio (`github.com/trollyHUB/gocontact-studio`)
+* **Продукт:** GoContact Studio Community Edition (`github.com/trollyHUB/gocontact-community`)
 * **Правообладатель:** Толеген Манасов (Tolegen Manassov), GitHub: `trollyHUB`
 * **Основание:** Статья 7 GNU Affero General Public License версии 3 («Additional Permissions»)
 * **Редакция:** 1.0 от 2026-10-25
@@ -12,8 +12,8 @@
 GoContact Studio лицензируется на условиях **GNU Affero General Public License версии 3** (`AGPL-3.0-only`). Основная цель AGPL v3 — гарантировать, что модификации самого ядра системы и её сервисов остаются открытыми для сообщества.
 
 В то же время проект поощряет создание богатой независимой экосистемы расширений:
-* **WebAssembly (Wasm) плагинов** (песочница `wazero` в релизе `v0.9.0`);
-* **Инструментов и серверов Model Context Protocol (MCP)** (релиз `v0.8.0`);
+* **WebAssembly (Wasm) плагинов** (песочница `wazero`);
+* **Инструментов и серверов Model Context Protocol (MCP)**;
 * **Внешних скриптов интеграции, ботов и коннекторов** (REST API, WebSocket, Webhooks, CardDAV).
 
 Чтобы разработчики плагинов и корпоративные интеграторы могли разрабатывать как открытые, так и закрытые (проприетарные) модули расширения без риска юридического «заражения» копилефтом AGPL v3, Правообладатель настоящим предоставляет официальное **Исключение для плагинов (Plugin Exception)**.
@@ -26,7 +26,7 @@ GoContact Studio лицензируется на условиях **GNU Affero G
 
 1. **Использование только публичных интерфейсов (Public Interfaces Only):**
    Плагин взаимодействует с GoContact Studio **исключительно** через один или несколько следующих публично документированных каналов:
-   * **WebAssembly Plugin ABI** (функции импорта и экспорта `wazero`, описанные в `docs/roadmap/v0.9.0-wasm-plugins-cli-palette/`);
+   * **WebAssembly Plugin ABI** (функции импорта и экспорта `wazero`, опубликованные в официальной спецификации Wasm Plugin ABI проекта);
    * **Model Context Protocol (MCP)** по протоколу JSON-RPC 2.0 (через `stdio`, loopback HTTP или SSE);
    * **Сетевые интерфейсы:** Local REST API v1 (`http://127.0.0.1:8089/api/v1/*`), WebSocket Hub, CardDAV (RFC 6352/6578) или входящие/исходящие Webhooks.
 

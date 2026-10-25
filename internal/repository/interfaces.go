@@ -9,7 +9,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// ContactRepository определяет контракт хранилища контактов (Неделя 6: Интерфейсы, Паттерн Repository).
+// ContactRepository определяет контракт хранилища контактов.
 type ContactRepository interface {
 	Create(ctx context.Context, contact *domain.Contact) error
 	GetByID(ctx context.Context, id int64) (*domain.Contact, error)

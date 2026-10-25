@@ -16,7 +16,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/repository"
 )
 
-// LocalAPIServer — встроенный HTTP REST API сервер для доступа к адресной книге по сети (Неделя 11: REST API, JSON-запросы и ответы).
+// LocalAPIServer — встроенный HTTP REST API сервер для доступа к адресной книге по сети.
 type LocalAPIServer struct {
 	port        int
 	contactRepo repository.ContactRepository

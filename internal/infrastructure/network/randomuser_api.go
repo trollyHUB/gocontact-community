@@ -14,7 +14,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// RandomUserClient — HTTP-клиент для получения контактов из внешнего REST API (Неделя 11: HTTP-клиент, JSON-запросы и ответы).
+// RandomUserClient — HTTP-клиент для получения контактов из внешнего REST API.
 type RandomUserClient struct {
 	baseURL    string
 	httpClient *http.Client

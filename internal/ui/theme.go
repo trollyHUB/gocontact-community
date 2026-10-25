@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 )
 
-// StudioTheme реализует кастомную тему оформления GoContact Studio с поддержкой светлого и тёмного режимов (Неделя 9).
+// StudioTheme реализует кастомную тему оформления GoContact Studio с поддержкой светлого и тёмного режимов.
 type StudioTheme struct {
 	variant fyne.ThemeVariant
 }

@@ -15,7 +15,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// ContactRepo реализует интерфейс repository.ContactRepository на базе СУБД SQLite (Неделя 12).
+// ContactRepo реализует интерфейс repository.ContactRepository на базе СУБД SQLite.
 type ContactRepo struct {
 	db *sql.DB
 }

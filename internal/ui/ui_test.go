@@ -158,4 +158,3 @@ func saveCanvasPNG(t *testing.T, win fyne.Window, path string) {
 		t.Fatalf("ошибка сохранения PNG: %v", err)
 	}
 }
-

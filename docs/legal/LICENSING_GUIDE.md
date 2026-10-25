@@ -2,7 +2,7 @@
 
 * **Документ:** `docs/legal/LICENSING_GUIDE.md`
 * **Редакция:** 1.0 от 2026-10-25
-* **Связанные файлы:** [LICENSE](../../LICENSE) · [NOTICE](../../NOTICE) · [LICENSE-COMMERCIAL.md](../../LICENSE-COMMERCIAL.md) · [TRADEMARK.md](../../TRADEMARK.md) · [PLUGIN_EXCEPTION.md](../../PLUGIN_EXCEPTION.md) · [CLA.md](../../CLA.md) · [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md) · [licenses/](../../licenses/) · [COMMERCIAL_LICENSE_TEMPLATE.md](./COMMERCIAL_LICENSE_TEMPLATE.md) · [ADR-0016](../adr/0016-database-engines-message-brokers-and-licensing-matrix.md)
+* **Связанные файлы:** [LICENSE](../../LICENSE) · [NOTICE](../../NOTICE) · [LICENSE-COMMERCIAL.md](../../LICENSE-COMMERCIAL.md) · [TRADEMARK.md](../../TRADEMARK.md) · [PLUGIN_EXCEPTION.md](../../PLUGIN_EXCEPTION.md) · [CLA.md](../../CLA.md) · [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md) · [licenses/](../../licenses/) · [COMMERCIAL_LICENSE_TEMPLATE.md](./COMMERCIAL_LICENSE_TEMPLATE.md)
 
 > [!CAUTION]
 > Этот документ составлен как инженерно-правовая схема на основе официальных текстов GNU AGPL v3 и практики проектов Grafana, Twenty, Nextcloud, MongoDB, Sentry. Он **не является юридической консультацией**. Перед заключением первого коммерческого договора и регистрацией товарного знака рекомендуется проверка юристом по ИС (в РК — патентный поверенный).
@@ -70,7 +70,7 @@ flowchart TB
 | 11 | Tivoization: поставка на устройствах с блокировкой модификации | AGPL ст. 6 «Installation Information» | — |
 | 12 | Обход через DRM / анти-обходные законы | AGPL ст. 3 | — |
 | 13 | Переписывание кода на другом языке (Rust/TS) «своими словами» | Перевод = переработка произведения (Бернская конвенция ст. 8, 12); LICENSE-COMMERCIAL §6 | Чистая переработка идей (clean-room) законна: идеи и алгоритмы не охраняются авторским правом |
-| 14 | Копирование 80-томной документации и ADR | Документация — объект авторского права, лицензирована вместе с репозиторием под AGPL; 7(b) атрибуция | — |
+| 14 | Несанкционированное копирование технической документации | Документация — объект авторского права, лицензирована вместе с репозиторием под AGPL; 7(b) атрибуция | — |
 | 15 | Использование старой версии v0.1.0 под MIT | **Не закрывается**: MIT-релиз безотзывен | Ограничен: v0.1.0 — только базовая адресная книга; всё новое — под AGPL |
 | 16 | Обучение ИИ-моделей на коде | Не регулируется AGPL однозначно; можно добавить `ai.txt`/`robots` сигналы | Правовая неопределённость в мире |
 | 17 | Нарушитель в юрисдикции, не признающей решения | Бернская конвенция (181 страна, включая РК) | Стоимость трансграничных исков |

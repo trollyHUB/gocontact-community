@@ -12,7 +12,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 )
 
-// JSONExportPayload представляет корневую структуру файла резервной копии JSON (Неделя 7).
+// JSONExportPayload представляет корневую структуру файла резервной копии JSON.
 type JSONExportPayload struct {
 	AppName    string            `json:"app_name"`
 	Version    string            `json:"version"`

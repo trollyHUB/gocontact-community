@@ -11,7 +11,7 @@ import (
 	"unicode"
 )
 
-// Константы валидации (Неделя 4).
+// Константы валидации.
 const (
 	MinPhoneDigits = 7
 	MaxPhoneDigits = 15
@@ -20,7 +20,7 @@ const (
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 
-// NormalizePhone очищает телефонный номер от лишних символов и приводит к аккуратному виду (Неделя 4: циклы, условия, switch).
+// NormalizePhone очищает телефонный номер от лишних символов и приводит к аккуратному виду.
 func NormalizePhone(raw string) (string, error) {
 	trimmed := strings.TrimSpace(raw)
 	if trimmed == "" {

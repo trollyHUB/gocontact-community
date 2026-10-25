@@ -10,7 +10,7 @@ import (
 	"unicode"
 )
 
-// PhoneType определяет классификацию номера телефона (Неделя 4: константы и пользовательские типы).
+// PhoneType определяет классификацию номера телефона.
 type PhoneType string
 
 const (
@@ -20,7 +20,7 @@ const (
 	PhoneOther  PhoneType = "other"
 )
 
-// Label возвращает русскоязычное название типа телефона (Неделя 4: switch).
+// Label возвращает русскоязычное название типа телефона.
 func (pt PhoneType) Label() string {
 	switch pt {
 	case PhoneMobile:
@@ -35,7 +35,7 @@ func (pt PhoneType) Label() string {
 }
 
 // AuditInfo хранит временные метки создания и изменения записи.
-// Используется для демонстрации композиции (встраивания структур — Неделя 6).
+// Используется для демонстрации композиции (встраивания структур ).
 type AuditInfo struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -103,11 +103,11 @@ type Contact struct {
 	JobTitle   string    `json:"job_title,omitempty"`
 	Address    Address   `json:"address"` // Вложенная структура (композиция)
 	Birthday   string    `json:"birthday,omitempty"`
-	Tags       []string  `json:"tags"` // Срез (slice) тегов (Неделя 5)
+	Tags       []string  `json:"tags"` // Срез (slice) тегов
 	Notes      string    `json:"notes,omitempty"`
 	IsFavorite bool      `json:"is_favorite"`
 	AvatarURL  string    `json:"avatar_url,omitempty"`
-	AuditInfo            // Встроенная структура (Struct Embedding — Неделя 6)
+	AuditInfo            // Встроенная структура (Struct Embedding )
 }
 
 // FullName возвращает полное ФИО контакта в формате «Фамилия Имя Отчество».
@@ -166,7 +166,7 @@ func firstRuneUpper(s string) rune {
 	return 0
 }
 
-// ToggleFavorite переключает статус избранного контакта (работа через указатель *Contact — Неделя 5).
+// ToggleFavorite переключает статус избранного контакта (работа через указатель *Contact ).
 func (c *Contact) ToggleFavorite() bool {
 	c.IsFavorite = !c.IsFavorite
 	c.Touch()

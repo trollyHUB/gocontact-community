@@ -18,7 +18,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/service"
 )
 
-// AppUI управляет главным окном и всеми графическими компонентами Fyne v2 (Неделя 9).
+// AppUI управляет главным окном и всеми графическими компонентами Fyne v2.
 type AppUI struct {
 	cfg             *config.Config
 	configPath      string

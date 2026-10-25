@@ -5,7 +5,7 @@ package assets
 
 import _ "embed"
 
-// AppIconPNG хранит встроенную иконку приложения (go:embed — Неделя 14).
+// AppIconPNG хранит встроенную иконку приложения (go:embed ).
 //
 //go:embed icon.png
 var AppIconPNG []byte

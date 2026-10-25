@@ -1,6 +1,6 @@
 # ✍️ Соглашение о передаче прав на вклад (Contributor License Agreement — CLA)
 
-* **Проект:** GoContact Studio (`github.com/trollyHUB/gocontact-studio`)
+* **Проект:** GoContact Community Edition (`github.com/trollyHUB/gocontact-community`)
 * **Правообладатель проекта («Мейнтейнер»):** Толеген Манасов (Tolegen Manassov), GitHub `trollyHUB`
 * **Редакция:** 1.0 от 2026-10-25 (основано на модели Apache Individual CLA / Harmony Agreements)
 
