@@ -4,13 +4,19 @@
 package network
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
+	crmDomain "github.com/trollyHUB/gocontact-studio/internal/domain/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/repository/memory"
 	"github.com/trollyHUB/gocontact-studio/internal/repository/sqlite"
+	crmService "github.com/trollyHUB/gocontact-studio/internal/service/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
@@ -24,11 +30,14 @@ func TestLocalAPIServer_AndHTTPClient(t *testing.T) {
 
 	repo := sqlite.NewContactRepo(db)
 	graphRepo := sqlite.NewGraphRepo(db)
+	crmRepo := sqlite.NewCRMRepo(db)
 	topoCache := memory.NewTopologyCache()
 	graphSvc := sna.NewGraphService(graphRepo, repo, topoCache, 2)
 	_ = graphSvc.ReloadGraph(ctx, false)
 
-	srv := NewLocalAPIServer(0, repo, graphSvc) // Выбираем свободный порт
+	crmSvc := crmService.NewCRMService(crmRepo, repo, graphRepo)
+
+	srv := NewLocalAPIServer(0, repo, graphSvc, crmSvc) // Выбираем свободный порт
 	if err := srv.Start(); err != nil {
 		t.Fatalf("не удалось запустить локальный REST API сервер: %v", err)
 	}
@@ -74,4 +83,47 @@ func TestLocalAPIServer_AndHTTPClient(t *testing.T) {
 		t.Errorf("ошибка GET /api/v1/graph: %v, status: %v", err, resp.StatusCode)
 	}
 	resp.Body.Close()
+
+	// Проверяем новые эндпоинты CRM v0.3.0
+	// 1. POST /api/v1/crm/interactions
+	interReq := CRMInteractionRequest{
+		Interaction: &crmDomain.Interaction{
+			Channel:        crmDomain.ChannelMeeting,
+			Title:          "Встреча в кафе 'Nedelka'",
+			ParticipantIDs: []int64{created.ID},
+			Sentiment:      1,
+		},
+		Promise: &crmDomain.ActionPromise{
+			ContactID:   created.ID,
+			Description: "Отправить коммерческое предложение",
+			DueAt:       time.Now().Add(24 * time.Hour),
+		},
+	}
+	reqBody, _ := json.Marshal(interReq)
+	postResp, err := http.Post(srv.BaseURL()+"/api/v1/crm/interactions", "application/json", bytes.NewReader(reqBody))
+	if err != nil || postResp.StatusCode != http.StatusCreated {
+		t.Fatalf("ошибка POST /api/v1/crm/interactions: %v, status: %v", err, postResp.StatusCode)
+	}
+	postResp.Body.Close()
+
+	// 2. GET /api/v1/crm/interactions?contact_id=...
+	getInterResp, err := http.Get(srv.BaseURL() + "/api/v1/crm/interactions?contact_id=" + strconv.FormatInt(created.ID, 10))
+	if err != nil || getInterResp.StatusCode != http.StatusOK {
+		t.Errorf("ошибка GET /api/v1/crm/interactions: %v, status: %v", err, getInterResp.StatusCode)
+	}
+	getInterResp.Body.Close()
+
+	// 3. GET /api/v1/crm/radar
+	radarResp, err := http.Get(srv.BaseURL() + "/api/v1/crm/radar?limit=5")
+	if err != nil || radarResp.StatusCode != http.StatusOK {
+		t.Errorf("ошибка GET /api/v1/crm/radar: %v, status: %v", err, radarResp.StatusCode)
+	}
+	radarResp.Body.Close()
+
+	// 4. GET /api/v1/crm/dossier
+	dossierResp, err := http.Get(srv.BaseURL() + "/api/v1/crm/dossier?contact_id=" + strconv.FormatInt(created.ID, 10))
+	if err != nil || dossierResp.StatusCode != http.StatusOK {
+		t.Errorf("ошибка GET /api/v1/crm/dossier: %v, status: %v", err, dossierResp.StatusCode)
+	}
+	dossierResp.Body.Close()
 }

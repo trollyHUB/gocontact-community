@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -17,6 +18,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
+	crm "github.com/trollyHUB/gocontact-studio/internal/domain/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/domain/graph"
 )
 
@@ -104,7 +106,30 @@ func (u *AppUI) renderDetailPanel(c *domain.Contact) {
 	})
 	btnDelete.Importance = widget.DangerImportance
 
+	btnLogTouch := widget.NewButtonWithIcon("⚡ Записать касание", theme.ContentAddIcon(), func() {
+		u.showTouchpointLoggerDialog(c)
+	})
+	btnLogTouch.Importance = widget.HighImportance
+
+	btnDossier := widget.NewButtonWithIcon("📄 Досье перед встречей", theme.DocumentIcon(), func() {
+		u.showPreMeetingDossierDialog(c.ID)
+	})
+
+	crmBar := container.NewGridWithColumns(2, btnLogTouch, btnDossier)
 	actionBar := container.NewGridWithColumns(2, btnEdit, btnToggleFav, btnVCard, btnDelete)
+
+	var headerBox fyne.CanvasObject
+	if u.crmService != nil {
+		healthSnap, err := u.crmService.CalculateContactHealth(context.Background(), c.ID)
+		if err == nil {
+			badge := NewHealthRingBadge(healthSnap.HealthScore, healthSnap.Status)
+			headerBox = container.NewHBox(badge, container.NewVBox(titleLbl, subtitleLbl))
+		} else {
+			headerBox = container.NewVBox(titleLbl, subtitleLbl)
+		}
+	} else {
+		headerBox = container.NewVBox(titleLbl, subtitleLbl)
+	}
 
 	infoGrid := container.New(layout.NewFormLayout(),
 		widget.NewLabelWithStyle("• Основной тел.:", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
@@ -140,16 +165,27 @@ func (u *AppUI) renderDetailPanel(c *domain.Contact) {
 	// Секция «Связи и социальное окружение» (Спринт 2.4)
 	relationshipsSection := u.buildRelationshipsSection(c)
 
+	// Секции Personal CRM (Спринт 3.3)
+	timelineSection := u.buildTimelineSection(c)
+	promisesSection := u.buildPromisesSection(c)
+	lifeEventsSection := u.buildLifeEventsSection(c)
+
 	detailBody := container.NewPadded(container.NewVBox(
-		titleLbl,
-		subtitleLbl,
+		headerBox,
+		crmBar,
 		actionBar,
+		widget.NewSeparator(),
+		timelineSection,
+		widget.NewSeparator(),
+		promisesSection,
+		widget.NewSeparator(),
+		lifeEventsSection,
+		widget.NewSeparator(),
+		relationshipsSection,
 		widget.NewSeparator(),
 		infoGrid,
 		widget.NewSeparator(),
 		notesCard,
-		widget.NewSeparator(),
-		relationshipsSection,
 	))
 
 	scroll := container.NewVScroll(detailBody)
@@ -195,6 +231,165 @@ func (u *AppUI) buildRelationshipsSection(c *domain.Contact) fyne.CanvasObject {
 		relsBox,
 		container.NewHBox(btnAddRel),
 	))
+}
+
+func (u *AppUI) buildTimelineSection(c *domain.Contact) fyne.CanvasObject {
+	title := widget.NewLabelWithStyle("🕒 Хронология взаимодействий (Timeline)", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+
+	body := container.NewVBox()
+
+	if u.crmService != nil {
+		touches, err := u.crmService.GetContactTimeline(context.Background(), c.ID, 5)
+		if err == nil && len(touches) > 0 {
+			for _, t := range touches {
+				dateStr := t.OccurredAt.Local().Format("02.01.2006 15:04")
+				dur := ""
+				if t.DurationMin > 0 {
+					dur = fmt.Sprintf(" (%d мин)", t.DurationMin)
+				}
+				lbl := widget.NewLabel(fmt.Sprintf("%s%s — %s: %s", t.Channel.Label(), dur, dateStr, t.Title))
+				lbl.Wrapping = fyne.TextWrapWord
+				body.Add(lbl)
+				if t.NotesMD != "" {
+					sub := widget.NewLabel(fmt.Sprintf("   > %s", t.NotesMD))
+					sub.Wrapping = fyne.TextWrapWord
+					body.Add(sub)
+				}
+			}
+		} else {
+			body.Add(widget.NewLabel("История взаимодействий пока пуста."))
+		}
+	} else {
+		body.Add(widget.NewLabel("Сервис Personal CRM не подключен."))
+	}
+
+	btnLog := widget.NewButtonWithIcon("+ Записать касание", theme.ContentAddIcon(), func() {
+		u.showTouchpointLoggerDialog(c)
+	})
+	btnLog.Importance = widget.MediumImportance
+
+	return widget.NewCard("", "", container.NewVBox(
+		title,
+		body,
+		container.NewHBox(btnLog),
+	))
+}
+
+func (u *AppUI) buildPromisesSection(c *domain.Contact) fyne.CanvasObject {
+	title := widget.NewLabelWithStyle("🎯 Взаимные обещания и обязательства", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+	body := container.NewVBox()
+
+	if u.crmService != nil {
+		promises, err := u.crmService.ListPromisesByContact(context.Background(), c.ID)
+		if err == nil && len(promises) > 0 {
+			for _, p := range promises {
+				who := "Вы пообещали"
+				if p.Direction == "they_promised" {
+					who = "Вам пообещали"
+				}
+				statusIcon := "⏳"
+				if p.Status == "completed" {
+					statusIcon = "✅"
+				}
+				dueStr := p.DueAt.Format("02.01.2006")
+				pText := fmt.Sprintf("%s [%s]: %s (Срок: %s)", statusIcon, who, p.Description, dueStr)
+
+				pID := p.ID
+				pStatus := p.Status
+				pRow := container.NewHBox(
+					newWrappedValueLabel(pText),
+				)
+				if pStatus == "pending" {
+					btnDone := widget.NewButton("Выполнено", func() {
+						_ = u.crmService.UpdatePromiseStatus(context.Background(), pID, "completed")
+						u.renderDetailPanel(c)
+					})
+					pRow.Add(btnDone)
+				}
+				body.Add(pRow)
+			}
+		} else {
+			body.Add(widget.NewLabel("Открытых обещаний нет."))
+		}
+	}
+
+	return widget.NewCard("", "", container.NewVBox(title, body))
+}
+
+func (u *AppUI) buildLifeEventsSection(c *domain.Contact) fyne.CanvasObject {
+	title := widget.NewLabelWithStyle("🌱 Памятные даты и важный контекст", fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+	body := container.NewVBox()
+
+	if u.crmService != nil {
+		events, err := u.crmService.ListLifeEvents(context.Background(), c.ID)
+		if err == nil && len(events) > 0 {
+			for _, ev := range events {
+				body.Add(widget.NewLabel(fmt.Sprintf("• %s: %s (%s)", ev.Title, ev.EventDate, ev.Notes)))
+			}
+		} else {
+			body.Add(widget.NewLabel("Памятных дат пока не сохранено."))
+		}
+	}
+
+	btnAddDate := widget.NewButtonWithIcon("+ Добавить дату", theme.ContentAddIcon(), func() {
+		u.showAddLifeEventDialog(c)
+	})
+	btnAddDate.Importance = widget.LowImportance
+
+	return widget.NewCard("", "", container.NewVBox(
+		title,
+		body,
+		container.NewHBox(btnAddDate),
+	))
+}
+
+func (u *AppUI) showAddLifeEventDialog(c *domain.Contact) {
+	if u.crmService == nil || c == nil {
+		return
+	}
+
+	titleEntry := widget.NewEntry()
+	titleEntry.SetPlaceHolder("Например: День рождения, Годовщина...")
+
+	dateEntry := widget.NewEntry()
+	dateEntry.SetText(time.Now().Format("2006-01-02"))
+
+	notesEntry := widget.NewEntry()
+	notesEntry.SetPlaceHolder("Предпочтения, хобби, идеи подарков...")
+
+	form := container.NewVBox(
+		widget.NewLabel("Событие / Название:"),
+		titleEntry,
+		widget.NewLabel("Дата (ГГГГ-ММ-ДД):"),
+		dateEntry,
+		widget.NewLabel("Заметки и предпочтения:"),
+		notesEntry,
+	)
+
+	d := dialog.NewCustomConfirm(
+		"Добавить памятную дату",
+		"Сохранить",
+		"Отмена",
+		form,
+		func(confirm bool) {
+			if !confirm || strings.TrimSpace(titleEntry.Text) == "" {
+				return
+			}
+			_, _ = u.crmService.CreateLifeEvent(context.Background(), &crm.LifeEvent{
+				ContactID:        c.ID,
+				EventType:        "custom",
+				Title:            strings.TrimSpace(titleEntry.Text),
+				EventDate:        strings.TrimSpace(dateEntry.Text),
+				IsRecurring:      true,
+				RemindDaysBefore: 7,
+				Notes:            strings.TrimSpace(notesEntry.Text),
+			})
+			u.renderDetailPanel(c)
+		},
+		u.mainWin,
+	)
+	d.Resize(fyne.NewSize(420, 300))
+	d.Show()
 }
 
 // showAddRelationshipDialog отображает модальное окно создания новой связи.

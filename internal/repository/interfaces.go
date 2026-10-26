@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
+	"github.com/trollyHUB/gocontact-studio/internal/domain/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/domain/graph"
 )
 
@@ -54,4 +55,30 @@ type OrganizationRepository interface {
 	ListOrganizations(ctx context.Context) ([]*graph.Organization, error)
 	UpdateOrganization(ctx context.Context, org *graph.Organization) error
 	DeleteOrganization(ctx context.Context, id int64) error
+}
+
+// CRMRepository определяет контракт персистентного хранения сущностей Personal CRM:
+// журнала взаимодействий (M:N), обещаний, вех жизни и политик частоты контактов.
+type CRMRepository interface {
+	// Взаимодействия
+	CreateInteraction(ctx context.Context, inter *crm.Interaction) (int64, error)
+	GetInteraction(ctx context.Context, id int64) (*crm.Interaction, error)
+	ListInteractionsByContact(ctx context.Context, contactID int64, limit int) ([]*crm.Interaction, error)
+	DeleteInteraction(ctx context.Context, id int64) error
+
+	// Обещания
+	CreatePromise(ctx context.Context, promise *crm.ActionPromise) (int64, error)
+	UpdatePromiseStatus(ctx context.Context, id int64, status string) error
+	ListPendingPromises(ctx context.Context) ([]*crm.ActionPromise, error)
+	ListPromisesByContact(ctx context.Context, contactID int64) ([]*crm.ActionPromise, error)
+
+	// Вехи жизни
+	CreateLifeEvent(ctx context.Context, event *crm.LifeEvent) (int64, error)
+	ListLifeEventsByContact(ctx context.Context, contactID int64) ([]*crm.LifeEvent, error)
+	DeleteLifeEvent(ctx context.Context, id int64) error
+
+	// Политики частоты контактов и здоровье
+	GetCadencePolicy(ctx context.Context, contactID int64) (*crm.HealthSnapshot, error)
+	UpsertCadencePolicy(ctx context.Context, snap *crm.HealthSnapshot) error
+	ListCadencePolicies(ctx context.Context) ([]*crm.HealthSnapshot, error)
 }

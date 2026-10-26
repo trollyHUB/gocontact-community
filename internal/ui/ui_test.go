@@ -16,11 +16,13 @@ import (
 	"fyne.io/fyne/v2/theme"
 
 	"github.com/trollyHUB/gocontact-studio/internal/config"
+	crmDomain "github.com/trollyHUB/gocontact-studio/internal/domain/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/domain/graph"
 	"github.com/trollyHUB/gocontact-studio/internal/infrastructure/network"
 	"github.com/trollyHUB/gocontact-studio/internal/repository/memory"
 	"github.com/trollyHUB/gocontact-studio/internal/repository/sqlite"
 	"github.com/trollyHUB/gocontact-studio/internal/service"
+	crmService "github.com/trollyHUB/gocontact-studio/internal/service/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
@@ -43,9 +45,14 @@ func TestStudioTheme_AndHelpers(t *testing.T) {
 	if valueOrDash("") != "—" || valueOrDash("Алматы") != "Алматы" {
 		t.Error("ошибка функции valueOrDash")
 	}
+
+	badge := NewHealthRingBadge(85, crmDomain.StatusThriving)
+	if badge == nil || badge.score != 85 {
+		t.Errorf("неверная инициализация HealthRingBadge: %+v", badge)
+	}
 }
 
-func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
+func TestFullAppUI_WithCRMAndSocialGraphTabsAndScreenshots(t *testing.T) {
 	ctx := context.Background()
 	db, err := sqlite.OpenAndMigrate(":memory:")
 	if err != nil {
@@ -60,12 +67,14 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 	contactRepo := sqlite.NewContactRepo(db)
 	groupRepo := sqlite.NewGroupRepo(db)
 	graphRepo := sqlite.NewGraphRepo(db)
+	crmRepo := sqlite.NewCRMRepo(db)
 	cache := memory.NewContactCache()
 	topCache := memory.NewTopologyCache()
 	apiClient := network.NewRandomUserClient("", 2*time.Second)
 
 	svc := service.NewContactService(contactRepo, groupRepo, cache, apiClient, 2)
 	graphSvc := sna.NewGraphService(graphRepo, contactRepo, topCache, 2)
+	crmSvc := crmService.NewCRMService(crmRepo, contactRepo, graphRepo)
 
 	// Создаём тестовые связи между контактами 1, 2, 3
 	_, _ = graphSvc.CreateRelationship(ctx, &graph.Relationship{
@@ -87,57 +96,78 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 	_ = graphSvc.ReloadGraph(ctx, false)
 	_ = graphSvc.RecalculateMetrics(ctx)
 
+	// Добавляем тестовые взаимодействия и обещания в CRM
+	_, _ = crmSvc.LogInteraction(ctx, &crmDomain.Interaction{
+		Channel:        crmDomain.ChannelMeeting,
+		Title:          "Обсуждение дорожной карты v0.3.0 за кофе в Nedelka",
+		NotesMD:        "Договорились финализировать интеграцию графа и CRM радара.",
+		ParticipantIDs: []int64{1},
+		Sentiment:      1,
+		OccurredAt:     time.Now().Add(-2 * time.Hour),
+	}, &crmDomain.ActionPromise{
+		ContactID:   1,
+		Description: "Отправить обновлённый Tech Passport и ADR",
+		DueAt:       time.Now().Add(24 * time.Hour),
+	})
+	_, _ = crmSvc.CreateLifeEvent(ctx, &crmDomain.LifeEvent{
+		ContactID: 1,
+		Title:     "День рождения",
+		EventDate: "2026-05-15",
+		EventType: "birthday",
+	})
+
 	tmpDir := t.TempDir()
 	cfgPath := filepath.Join(tmpDir, "config.json")
 	cfg := config.DefaultConfig()
 	backupSched := service.NewBackupScheduler(svc, filepath.Join(tmpDir, "backups"), 10)
-	localAPI := network.NewLocalAPIServer(0, contactRepo, graphSvc)
+	localAPI := network.NewLocalAPIServer(0, contactRepo, graphSvc, crmSvc)
 
 	headlessApp := test.NewApp()
 	defer headlessApp.Quit()
 
-	appUI := NewAppUIWithApp(headlessApp, cfg, cfgPath, svc, graphSvc, backupSched, localAPI)
+	appUI := NewAppUIWithApp(headlessApp, cfg, cfgPath, svc, graphSvc, crmSvc, backupSched, localAPI)
 	appUI.mainWin.Resize(fyne.NewSize(1240, 780))
 
-	// Проверяем наличие двух вкладок: Контакты и Социальный граф
-	if len(appUI.tabs.Items) != 2 {
-		t.Fatalf("ожидалось 2 вкладки приложения, получено %d", len(appUI.tabs.Items))
+	// Проверяем наличие трёх вкладок: Контакты, Социальный граф и CRM Радар
+	if len(appUI.tabs.Items) != 3 {
+		t.Fatalf("ожидалось 3 вкладки приложения, получено %d", len(appUI.tabs.Items))
 	}
 
-	// Переключаемся на вкладку «Социальный граф»
-	appUI.tabs.SelectIndex(1)
-	appUI.graphView.RefreshData()
-
-	// Проверяем захват скриншотов
 	outDir := os.Getenv("GOCONTACT_SCREENSHOT_DIR")
 	if outDir == "" {
 		if os.Getenv("CAPTURE_SCREENSHOTS") == "1" {
-			outDir = filepath.Join("..", "..", "docs", "screenshots", "v0.2.0")
+			outDir = filepath.Join("..", "..", "docs", "screenshots", "v0.3.0")
 		} else {
 			outDir = t.TempDir()
 		}
 	}
 
-	// 1. Скриншот режима Force Graph
-	saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_social_graph_force.png"))
+	// 1. Вкладка «Социальный граф»
+	appUI.tabs.SelectIndex(1)
+	appUI.graphView.RefreshData()
 
-	// 2. Скриншот режима Dunbar Orbits
-	appUI.graphView.modeSelect.SetSelected("Орбиты Данбара")
-	saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_social_graph_dunbar.png"))
+	// 2. Вкладка «CRM Радар»
+	appUI.tabs.SelectIndex(2)
+	appUI.radarView.RefreshData()
+	saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_crm_radar.png"))
 
-	// 3. Скриншот поиска цепочки интро (Dijkstra)
-	appUI.graphView.modeSelect.SetSelected("Силовой граф")
-	if len(appUI.graphView.sourceSelect.Options) >= 2 {
-		appUI.graphView.sourceSelect.SetSelected(appUI.graphView.sourceSelect.Options[0])
-		appUI.graphView.targetSelect.SetSelected(appUI.graphView.targetSelect.Options[1])
-		appUI.graphView.handleFindWarmIntro()
-		saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_warm_intro_path.png"))
-	}
-
-	// Возвращаемся на вкладку Контакты и проверяем карточку связей
+	// 3. Возвращаемся на вкладку Контакты и проверяем карточку с таймлайном и бейджем здоровья
 	appUI.tabs.SelectIndex(0)
 	if len(appUI.contacts) > 0 {
 		appUI.renderDetailPanel(appUI.contacts[0])
+		saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_timeline_detail.png"))
+	}
+
+	// 4. Проверяем открытие диалога быстрого логгера касания
+	if len(appUI.contacts) > 0 {
+		appUI.showTouchpointLoggerDialog(appUI.contacts[0])
+		saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_touchpoint_dialog.png"))
+	}
+
+	// 5. Проверяем открытие диалога Pre-Meeting Dossier
+	if len(appUI.contacts) > 0 {
+		appUI.showPreMeetingDossierDialog(appUI.contacts[0].ID)
+		saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_pre_meeting_dossier.png"))
 	}
 }
 

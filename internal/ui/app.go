@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
@@ -19,6 +20,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 	"github.com/trollyHUB/gocontact-studio/internal/infrastructure/network"
 	"github.com/trollyHUB/gocontact-studio/internal/service"
+	crmService "github.com/trollyHUB/gocontact-studio/internal/service/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
@@ -28,6 +30,7 @@ type AppUI struct {
 	configPath      string
 	service         *service.ContactService
 	graphService    sna.GraphService
+	crmService      crmService.CRMService
 	backupScheduler *service.BackupScheduler
 	apiServer       *network.LocalAPIServer
 
@@ -38,6 +41,7 @@ type AppUI struct {
 	// Навигация и вкладки
 	tabs      *container.AppTabs
 	graphView *GraphView
+	radarView *RadarView
 
 	// Состояние фильтров и данных
 	currentFilter   domain.ContactFilter
@@ -58,17 +62,18 @@ type AppUI struct {
 	progressBar       *widget.ProgressBar
 }
 
-// NewAppUI создаёт и настраивает графическое приложение с поддержкой социального графа.
+// NewAppUI создаёт и настраивает графическое приложение с поддержкой социального графа и Personal CRM.
 func NewAppUI(
 	cfg *config.Config,
 	configPath string,
 	svc *service.ContactService,
 	graphSvc sna.GraphService,
+	crmSvc crmService.CRMService,
 	backupSched *service.BackupScheduler,
 	apiServer *network.LocalAPIServer,
 ) *AppUI {
 	fyneApp := app.NewWithID("kz.gocontact.studio")
-	return NewAppUIWithApp(fyneApp, cfg, configPath, svc, graphSvc, backupSched, apiServer)
+	return NewAppUIWithApp(fyneApp, cfg, configPath, svc, graphSvc, crmSvc, backupSched, apiServer)
 }
 
 // NewAppUIWithApp инициализирует полный интерфейс на переданном экземпляре fyne.App (удобно для Headless-тестов).
@@ -78,6 +83,7 @@ func NewAppUIWithApp(
 	configPath string,
 	svc *service.ContactService,
 	graphSvc sna.GraphService,
+	crmSvc crmService.CRMService,
 	backupSched *service.BackupScheduler,
 	apiServer *network.LocalAPIServer,
 ) *AppUI {
@@ -99,6 +105,7 @@ func NewAppUIWithApp(
 		configPath:      configPath,
 		service:         svc,
 		graphService:    graphSvc,
+		crmService:      crmSvc,
 		backupScheduler: backupSched,
 		apiServer:       apiServer,
 		fyneApp:         fyneApp,
@@ -148,13 +155,19 @@ func (u *AppUI) buildUI() {
 	// Вкладка 2: Интерактивная среда «Социальный граф» (Спринты 2.3 & 2.4)
 	u.graphView = NewGraphView(u, u.service, u.graphService)
 
+	// Вкладка 3: Дашборд «CRM Радар» (Спринт 3.3)
+	u.radarView = NewRadarView(u, u.crmService)
+
 	u.tabs = container.NewAppTabs(
 		container.NewTabItem("📇 Контакты", contactsSplit),
 		container.NewTabItem("🕸️ Социальный граф", u.graphView.Container()),
+		container.NewTabItem("📡 CRM Радар", u.radarView.Container()),
 	)
 	u.tabs.OnSelected = func(tab *container.TabItem) {
 		if tab.Text == "🕸️ Социальный граф" && u.graphView != nil {
 			u.graphView.RefreshData()
+		} else if tab.Text == "📡 CRM Радар" && u.radarView != nil {
+			u.radarView.RefreshData()
 		}
 	}
 
@@ -172,7 +185,7 @@ func (u *AppUI) buildUI() {
 }
 
 func (u *AppUI) setupKeyboardShortcuts() {
-	// Ctrl+1: Вкладка "Контакты", Ctrl+2: Вкладка "Социальный граф"
+	// Ctrl+1: Вкладка "Контакты", Ctrl+2: Вкладка "Социальный граф", Ctrl+3: Вкладка "CRM Радар"
 	u.mainWin.Canvas().AddShortcut(&desktop.CustomShortcut{
 		KeyName:  fyne.Key1,
 		Modifier: fyne.KeyModifierShortcutDefault,
@@ -188,6 +201,35 @@ func (u *AppUI) setupKeyboardShortcuts() {
 	}, func(_ fyne.Shortcut) {
 		if u.tabs != nil {
 			u.tabs.SelectIndex(1)
+		}
+	})
+
+	u.mainWin.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.Key3,
+		Modifier: fyne.KeyModifierShortcutDefault,
+	}, func(_ fyne.Shortcut) {
+		if u.tabs != nil {
+			u.tabs.SelectIndex(2)
+		}
+	})
+
+	// Ctrl+L: Быстрое логирование касания
+	u.mainWin.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.KeyL,
+		Modifier: fyne.KeyModifierShortcutDefault,
+	}, func(_ fyne.Shortcut) {
+		u.showTouchpointLoggerDialog(u.selectedContact)
+	})
+
+	// Ctrl+D: Досье перед встречей
+	u.mainWin.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.KeyD,
+		Modifier: fyne.KeyModifierShortcutDefault,
+	}, func(_ fyne.Shortcut) {
+		if u.selectedContact != nil {
+			u.showPreMeetingDossierDialog(u.selectedContact.ID)
+		} else {
+			dialog.ShowInformation("Подсказка", "Выберите контакт в списке слева, чтобы открыть досье (Ctrl+D)", u.mainWin)
 		}
 	})
 

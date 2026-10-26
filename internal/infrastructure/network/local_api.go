@@ -14,22 +14,25 @@ import (
 	"time"
 
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
+	crmDomain "github.com/trollyHUB/gocontact-studio/internal/domain/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/domain/graph"
 	"github.com/trollyHUB/gocontact-studio/internal/repository"
+	crmSvc "github.com/trollyHUB/gocontact-studio/internal/service/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
-// LocalAPIServer — встроенный HTTP REST API сервер для доступа к контактам и социальному графу.
+// LocalAPIServer — встроенный HTTP REST API сервер для доступа к контактам, социальному графу и CRM.
 type LocalAPIServer struct {
 	port         int
 	contactRepo  repository.ContactRepository
 	graphService sna.GraphService
+	crmService   crmSvc.CRMService
 	server       *http.Server
 	addr         string
 }
 
-// NewLocalAPIServer создаёт новый экземпляр локального REST API сервера с поддержкой GraphService.
-func NewLocalAPIServer(port int, repo repository.ContactRepository, graphSvc sna.GraphService) *LocalAPIServer {
+// NewLocalAPIServer создаёт новый экземпляр локального REST API сервера с поддержкой GraphService и CRMService.
+func NewLocalAPIServer(port int, repo repository.ContactRepository, graphSvc sna.GraphService, crmService crmSvc.CRMService) *LocalAPIServer {
 	if port <= 0 {
 		port = 8089
 	}
@@ -37,6 +40,7 @@ func NewLocalAPIServer(port int, repo repository.ContactRepository, graphSvc sna
 		port:         port,
 		contactRepo:  repo,
 		graphService: graphSvc,
+		crmService:   crmService,
 		addr:         fmt.Sprintf("127.0.0.1:%d", port),
 	}
 }
@@ -48,9 +52,14 @@ func (s *LocalAPIServer) Start() error {
 	mux.HandleFunc("/api/v1/contacts", s.handleContacts)
 	mux.HandleFunc("/api/v1/stats", s.handleStats)
 
-	// Новые эндпоинты релиза v0.2.0 (Спринт 2.4)
+	// Эндпоинты релиза v0.2.0 (Социальный граф)
 	mux.HandleFunc("/api/v1/graph", s.handleGraph)
 	mux.HandleFunc("/api/v1/graph/shortest-path", s.handleShortestPath)
+
+	// Эндпоинты релиза v0.3.0 (Personal CRM & Relationship Intelligence)
+	mux.HandleFunc("/api/v1/crm/interactions", s.handleCRMInteractions)
+	mux.HandleFunc("/api/v1/crm/radar", s.handleCRMRadar)
+	mux.HandleFunc("/api/v1/crm/dossier", s.handleCRMDossier)
 
 	ln, err := net.Listen("tcp", s.addr)
 	if err != nil {
@@ -91,7 +100,7 @@ func (s *LocalAPIServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"status":    "ok",
 		"service":   "GoContact Studio REST API",
-		"version":   "v0.2.0",
+		"version":   "v0.3.0",
 		"timestamp": time.Now().Format(time.RFC3339),
 	})
 }
@@ -225,6 +234,147 @@ func (s *LocalAPIServer) handleShortestPath(w http.ResponseWriter, r *http.Reque
 	}
 
 	writeJSON(w, http.StatusOK, path)
+}
+
+// CRMInteractionRequest — запрос на создание взаимодействия (с опциональным обещанием).
+type CRMInteractionRequest struct {
+	Interaction *crmDomain.Interaction   `json:"interaction,omitempty"`
+	Promise     *crmDomain.ActionPromise `json:"promise,omitempty"`
+	// Позволяет отправлять Interaction прямо на верхнем уровне
+	Channel        crmDomain.ChannelType `json:"channel,omitempty"`
+	Title          string                `json:"title,omitempty"`
+	NotesMD        string                `json:"notes_md,omitempty"`
+	ParticipantIDs []int64               `json:"participant_ids,omitempty"`
+	Sentiment      int                   `json:"sentiment,omitempty"`
+}
+
+// handleCRMInteractions обрабатывает GET и POST для взаимодействий контакта.
+func (s *LocalAPIServer) handleCRMInteractions(w http.ResponseWriter, r *http.Request) {
+	if s.crmService == nil {
+		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "CRM сервис недоступен"})
+		return
+	}
+
+	ctx := r.Context()
+	switch r.Method {
+	case http.MethodGet:
+		contactIDStr := r.URL.Query().Get("contact_id")
+		if contactIDStr == "" {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "параметр contact_id обязателен"})
+			return
+		}
+		contactID, err := strconv.ParseInt(contactIDStr, 10, 64)
+		if err != nil || contactID <= 0 {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "некорректный contact_id"})
+			return
+		}
+
+		limit := 50
+		if lStr := r.URL.Query().Get("limit"); lStr != "" {
+			if l, err := strconv.Atoi(lStr); err == nil && l > 0 {
+				limit = l
+			}
+		}
+
+		timeline, err := s.crmService.GetContactTimeline(ctx, contactID, limit)
+		if err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return
+		}
+		writeJSON(w, http.StatusOK, timeline)
+
+	case http.MethodPost:
+		var req CRMInteractionRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "некорректный JSON тела запроса"})
+			return
+		}
+
+		inter := req.Interaction
+		if inter == nil {
+			// Если отправлено плоским объектом
+			inter = &crmDomain.Interaction{
+				Channel:        req.Channel,
+				Title:          req.Title,
+				NotesMD:        req.NotesMD,
+				ParticipantIDs: req.ParticipantIDs,
+				Sentiment:      req.Sentiment,
+				OccurredAt:     time.Now(),
+			}
+		}
+		if inter.OccurredAt.IsZero() {
+			inter.OccurredAt = time.Now()
+		}
+
+		created, err := s.crmService.LogInteraction(ctx, inter, req.Promise)
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+			return
+		}
+
+		writeJSON(w, http.StatusCreated, created)
+
+	default:
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "метод не поддерживается"})
+	}
+}
+
+// handleCRMRadar возвращает список кандидатов CRM радара (контакты с риском угасания).
+func (s *LocalAPIServer) handleCRMRadar(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "метод не поддерживается"})
+		return
+	}
+	if s.crmService == nil {
+		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "CRM сервис недоступен"})
+		return
+	}
+
+	limit := 10
+	if lStr := r.URL.Query().Get("limit"); lStr != "" {
+		if l, err := strconv.Atoi(lStr); err == nil && l > 0 {
+			limit = l
+		}
+	}
+
+	candidates, err := s.crmService.GetRadarCandidates(r.Context(), limit)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, candidates)
+}
+
+// handleCRMDossier генерирует и возвращает Pre-Meeting Dossier для контакта.
+func (s *LocalAPIServer) handleCRMDossier(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "метод не поддерживается"})
+		return
+	}
+	if s.crmService == nil {
+		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "CRM сервис недоступен"})
+		return
+	}
+
+	contactIDStr := r.URL.Query().Get("contact_id")
+	if contactIDStr == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "параметр contact_id обязателен"})
+		return
+	}
+	contactID, err := strconv.ParseInt(contactIDStr, 10, 64)
+	if err != nil || contactID <= 0 {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "некорректный contact_id"})
+		return
+	}
+
+	dossier, err := s.crmService.GeneratePreMeetingDossier(r.Context(), contactID)
+	if err != nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": err.Error()})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, dossier)
 }
 
 func writeJSON(w http.ResponseWriter, status int, data any) {

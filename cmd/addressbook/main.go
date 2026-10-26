@@ -15,6 +15,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/repository/memory"
 	"github.com/trollyHUB/gocontact-studio/internal/repository/sqlite"
 	"github.com/trollyHUB/gocontact-studio/internal/service"
+	"github.com/trollyHUB/gocontact-studio/internal/service/crm"
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 	"github.com/trollyHUB/gocontact-studio/internal/ui"
 )
@@ -23,7 +24,7 @@ const defaultConfigPath = "configs/config.json"
 
 func main() {
 	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "-v") {
-		fmt.Println("GoContact Studio v0.2.0 (Windows/amd64)")
+		fmt.Println("GoContact Studio v0.3.0 (Windows/amd64)")
 		return
 	}
 
@@ -52,6 +53,7 @@ func main() {
 	contactRepo := sqlite.NewContactRepo(db)
 	groupRepo := sqlite.NewGroupRepo(db)
 	graphRepo := sqlite.NewGraphRepo(db)
+	crmRepo := sqlite.NewSQLiteCRMRepo(db)
 	contactCache := memory.NewContactCache()
 	topologyCache := memory.NewTopologyCache()
 	apiClient := network.NewRandomUserClient(cfg.RandomUserAPIURL, time.Duration(cfg.NetworkTimeoutSec)*time.Second)
@@ -73,6 +75,13 @@ func main() {
 		cfg.WorkerPoolSize,
 	)
 
+	// Подсистема Personal CRM (Relationship Intelligence)
+	crmService := crm.NewCRMService(
+		crmRepo,
+		contactRepo,
+		graphRepo,
+	)
+
 	// Первичная синхронизация топологии и запуск физического движка
 	if err := graphService.ReloadGraph(ctx, false); err != nil {
 		log.Printf("[WARN] ошибка начальной загрузки графа: %v", err)
@@ -84,7 +93,7 @@ func main() {
 	defer graphService.StopSimulation()
 
 	// 5. Запуск встроенного локального HTTP REST API сервера в фоновой горутине
-	localAPIServer := network.NewLocalAPIServer(cfg.LocalAPIPort, contactRepo, graphService)
+	localAPIServer := network.NewLocalAPIServer(cfg.LocalAPIPort, contactRepo, graphService, crmService)
 	if err := localAPIServer.Start(); err != nil {
 		log.Printf("[WARN] не удалось запустить локальный REST API сервер: %v", err)
 	}
@@ -97,8 +106,8 @@ func main() {
 	// 6. Инициализация фонового планировщика автобэкапов на select + Ticker
 	backupScheduler := service.NewBackupScheduler(contactService, cfg.BackupDir, cfg.AutoBackupMinutes)
 
-	// 7. Инициализация и запуск графического интерфейса Fyne v2 с вкладкой социального графа
-	appUI := ui.NewAppUI(cfg, defaultConfigPath, contactService, graphService, backupScheduler, localAPIServer)
+	// 7. Инициализация и запуск графического интерфейса Fyne v2 (Контакты, Граф, Радар)
+	appUI := ui.NewAppUI(cfg, defaultConfigPath, contactService, graphService, crmService, backupScheduler, localAPIServer)
 	backupScheduler.Start(ctx, appUI.NotifyBackup)
 
 	appUI.Run()
