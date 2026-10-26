@@ -19,7 +19,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
-// LocalAPIServer вЂ” РІСЃС‚СЂРѕРµРЅРЅС‹Р№ HTTP REST API СЃРµСЂРІРµСЂ РґР»СЏ РґРѕСЃС‚СѓРїР° Рє РєРѕРЅС‚Р°РєС‚Р°Рј Рё СЃРѕС†РёР°Р»СЊРЅРѕРјСѓ РіСЂР°С„Сѓ.
+// LocalAPIServer — встроенный HTTP REST API сервер для доступа к контактам и социальному графу.
 type LocalAPIServer struct {
 	port         int
 	contactRepo  repository.ContactRepository
@@ -28,7 +28,7 @@ type LocalAPIServer struct {
 	addr         string
 }
 
-// NewLocalAPIServer СЃРѕР·РґР°С‘С‚ РЅРѕРІС‹Р№ СЌРєР·РµРјРїР»СЏСЂ Р»РѕРєР°Р»СЊРЅРѕРіРѕ REST API СЃРµСЂРІРµСЂР° СЃ РїРѕРґРґРµСЂР¶РєРѕР№ GraphService.
+// NewLocalAPIServer создаёт новый экземпляр локального REST API сервера с поддержкой GraphService.
 func NewLocalAPIServer(port int, repo repository.ContactRepository, graphSvc sna.GraphService) *LocalAPIServer {
 	if port <= 0 {
 		port = 8089
@@ -41,14 +41,14 @@ func NewLocalAPIServer(port int, repo repository.ContactRepository, graphSvc sna
 	}
 }
 
-// Start Р·Р°РїСѓСЃРєР°РµС‚ HTTP-СЃРµСЂРІРµСЂ РІ С„РѕРЅРѕРІРѕР№ РіРѕСЂСѓС‚РёРЅРµ.
+// Start запускает HTTP-сервер в фоновой горутине.
 func (s *LocalAPIServer) Start() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/health", s.handleHealth)
 	mux.HandleFunc("/api/v1/contacts", s.handleContacts)
 	mux.HandleFunc("/api/v1/stats", s.handleStats)
 
-	// РќРѕРІС‹Рµ СЌРЅРґРїРѕРёРЅС‚С‹ СЂРµР»РёР·Р° v0.2.0 (РЎРїСЂРёРЅС‚ 2.4)
+	// Новые эндпоинты релиза v0.2.0 (Спринт 2.4)
 	mux.HandleFunc("/api/v1/graph", s.handleGraph)
 	mux.HandleFunc("/api/v1/graph/shortest-path", s.handleShortestPath)
 
@@ -56,7 +56,7 @@ func (s *LocalAPIServer) Start() error {
 	if err != nil {
 		ln, err = net.Listen("tcp", "127.0.0.1:0")
 		if err != nil {
-			return fmt.Errorf("РЅРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РїСѓСЃС‚РёС‚СЊ Р»РѕРєР°Р»СЊРЅС‹Р№ REST API СЃРµСЂРІРµСЂ: %w", err)
+			return fmt.Errorf("не удалось запустить локальный REST API сервер: %w", err)
 		}
 		s.addr = ln.Addr().String()
 	}
@@ -74,7 +74,7 @@ func (s *LocalAPIServer) Start() error {
 	return nil
 }
 
-// Stop РєРѕСЂСЂРµРєС‚РЅРѕ РѕСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ HTTP-СЃРµСЂРІРµСЂ.
+// Stop корректно останавливает HTTP-сервер.
 func (s *LocalAPIServer) Stop(ctx context.Context) error {
 	if s.server == nil {
 		return nil
@@ -82,7 +82,7 @@ func (s *LocalAPIServer) Stop(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }
 
-// BaseURL РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»РЅС‹Р№ Р±Р°Р·РѕРІС‹Р№ URL Р·Р°РїСѓС‰РµРЅРЅРѕРіРѕ Р»РѕРєР°Р»СЊРЅРѕРіРѕ REST API.
+// BaseURL возвращает полный базовый URL запущенного локального REST API.
 func (s *LocalAPIServer) BaseURL() string {
 	return "http://" + s.addr
 }
@@ -115,7 +115,7 @@ func (s *LocalAPIServer) handleContacts(w http.ResponseWriter, r *http.Request) 
 	case http.MethodPost:
 		var c domain.Contact
 		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
-			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ JSON Р·Р°РїСЂРѕСЃ: " + err.Error()})
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "некорректный JSON запрос: " + err.Error()})
 			return
 		}
 		if err := s.contactRepo.Create(ctx, &c); err != nil {
@@ -125,7 +125,7 @@ func (s *LocalAPIServer) handleContacts(w http.ResponseWriter, r *http.Request) 
 		writeJSON(w, http.StatusCreated, c)
 
 	default:
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "РјРµС‚РѕРґ РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ"})
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "метод не поддерживается"})
 	}
 }
 
@@ -138,15 +138,15 @@ func (s *LocalAPIServer) handleStats(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, stats)
 }
 
-// handleGraph РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»РЅСѓСЋ С‚РѕРїРѕР»РѕРіРёСЋ СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р° (СѓР·Р»С‹, РєРѕРѕСЂРґРёРЅР°С‚С‹, СЂС‘Р±СЂР° Рё РјРµС‚СЂРёРєРё).
+// handleGraph возвращает полную топологию социального графа (узлы, координаты, рёбра и метрики).
 func (s *LocalAPIServer) handleGraph(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "РјРµС‚РѕРґ РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ"})
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "метод не поддерживается"})
 		return
 	}
 
 	if s.graphService == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "СЃРµСЂРІРёСЃ СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р° РЅРµРґРѕСЃС‚СѓРїРµРЅ"})
+		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "сервис социального графа недоступен"})
 		return
 	}
 
@@ -194,33 +194,33 @@ func (s *LocalAPIServer) handleGraph(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handleShortestPath РЅР°С…РѕРґРёС‚ СЃР°РјС‹Р№ С‚С‘РїР»С‹Р№ РїСѓС‚СЊ СЂСѓРєРѕРїРѕР¶Р°С‚РёР№ РјРµР¶РґСѓ from_id Рё to_id.
+// handleShortestPath находит самый тёплый путь рукопожатий между from_id и to_id.
 func (s *LocalAPIServer) handleShortestPath(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "РјРµС‚РѕРґ РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ"})
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "метод не поддерживается"})
 		return
 	}
 
 	if s.graphService == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "СЃРµСЂРІРёСЃ СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р° РЅРµРґРѕСЃС‚СѓРїРµРЅ"})
+		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "сервис социального графа недоступен"})
 		return
 	}
 
 	fromID, err1 := strconv.ParseInt(r.URL.Query().Get("from_id"), 10, 64)
 	toID, err2 := strconv.ParseInt(r.URL.Query().Get("to_id"), 10, 64)
 	if err1 != nil || err2 != nil || fromID <= 0 || toID <= 0 {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "РїР°СЂР°РјРµС‚СЂС‹ from_id Рё to_id РѕР±СЏР·Р°С‚РµР»СЊРЅС‹ Рё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹РјРё С‡РёСЃР»Р°РјРё"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "параметры from_id и to_id обязательны и должны быть положительными числами"})
 		return
 	}
 
 	if fromID == toID {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "from_id Рё to_id РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РѕРґРёРЅР°РєРѕРІС‹РјРё"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "from_id и to_id не могут быть одинаковыми"})
 		return
 	}
 
 	path, err := s.graphService.FindWarmIntroPath(r.Context(), fromID, toID)
 	if err != nil {
-		writeJSON(w, http.StatusNotFound, map[string]string{"error": "РїСѓС‚СЊ Р·РЅР°РєРѕРјСЃС‚РІ РјРµР¶РґСѓ РєРѕРЅС‚Р°РєС‚Р°РјРё РЅРµ РЅР°Р№РґРµРЅ"})
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "путь знакомств между контактами не найден"})
 		return
 	}
 
@@ -235,7 +235,7 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	_ = enc.Encode(data)
 }
 
-// CreateContactViaHTTP РѕС‚РїСЂР°РІР»СЏРµС‚ JSON POST-Р·Р°РїСЂРѕСЃ Рє REST API С‡РµСЂРµР· http.Client.
+// CreateContactViaHTTP отправляет JSON POST-запрос к REST API через http.Client.
 func CreateContactViaHTTP(ctx context.Context, baseURL string, contact *domain.Contact) (*domain.Contact, error) {
 	bodyBytes, err := json.Marshal(contact)
 	if err != nil {
@@ -258,7 +258,7 @@ func CreateContactViaHTTP(ctx context.Context, baseURL string, contact *domain.C
 	if resp.StatusCode != http.StatusCreated {
 		var errResp map[string]string
 		_ = json.NewDecoder(resp.Body).Decode(&errResp)
-		return nil, fmt.Errorf("РѕС€РёР±РєР° REST API (%d): %s", resp.StatusCode, errResp["error"])
+		return nil, fmt.Errorf("ошибка REST API (%d): %s", resp.StatusCode, errResp["error"])
 	}
 
 	var created domain.Contact

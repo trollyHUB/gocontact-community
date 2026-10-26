@@ -29,19 +29,19 @@ func TestStudioTheme_AndHelpers(t *testing.T) {
 	lightTheme := NewStudioTheme("light")
 
 	if darkTheme.Color(theme.ColorNamePrimary, theme.VariantDark) == nil {
-		t.Error("РѕР¶РёРґР°Р»СЃСЏ РЅРµРїСѓСЃС‚РѕР№ РѕСЃРЅРѕРІРЅРѕР№ С†РІРµС‚ С‚РµРјС‹")
+		t.Error("ожидался непустой основной цвет темы")
 	}
 	if lightTheme.Size(theme.SizeNamePadding) != 6 {
-		t.Errorf("РѕР¶РёРґР°Р»СЃСЏ РѕС‚СЃС‚СѓРї 6, РїРѕР»СѓС‡РµРЅРѕ %v", lightTheme.Size(theme.SizeNamePadding))
+		t.Errorf("ожидался отступ 6, получено %v", lightTheme.Size(theme.SizeNamePadding))
 	}
 
 	red := ParseHexColor("#EF4444")
 	if red.R != 239 {
-		t.Errorf("РЅРµРІРµСЂРЅС‹Р№ СЂР°Р·Р±РѕСЂ HEX-С†РІРµС‚Р° #EF4444: %+v", red)
+		t.Errorf("неверный разбор HEX-цвета #EF4444: %+v", red)
 	}
 
-	if valueOrDash("") != "вЂ”" || valueOrDash("РђР»РјР°С‚С‹") != "РђР»РјР°С‚С‹" {
-		t.Error("РѕС€РёР±РєР° С„СѓРЅРєС†РёРё valueOrDash")
+	if valueOrDash("") != "—" || valueOrDash("Алматы") != "Алматы" {
+		t.Error("ошибка функции valueOrDash")
 	}
 }
 
@@ -49,12 +49,12 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 	ctx := context.Background()
 	db, err := sqlite.OpenAndMigrate(":memory:")
 	if err != nil {
-		t.Fatalf("РѕС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ in-memory Р‘Р”: %v", err)
+		t.Fatalf("ошибка открытия in-memory БД: %v", err)
 	}
 	defer db.Close()
 
 	if err := sqlite.SeedDemoContactsIfEmpty(ctx, db); err != nil {
-		t.Fatalf("РѕС€РёР±РєР° СЃРёРґРёСЂРѕРІР°РЅРёСЏ РґРµРјРѕ-РєРѕРЅС‚Р°РєС‚РѕРІ: %v", err)
+		t.Fatalf("ошибка сидирования демо-контактов: %v", err)
 	}
 
 	contactRepo := sqlite.NewContactRepo(db)
@@ -67,14 +67,14 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 	svc := service.NewContactService(contactRepo, groupRepo, cache, apiClient, 2)
 	graphSvc := sna.NewGraphService(graphRepo, contactRepo, topCache, 2)
 
-	// РЎРѕР·РґР°С‘Рј С‚РµСЃС‚РѕРІС‹Рµ СЃРІСЏР·Рё РјРµР¶РґСѓ РєРѕРЅС‚Р°РєС‚Р°РјРё 1, 2, 3
+	// Создаём тестовые связи между контактами 1, 2, 3
 	_, _ = graphSvc.CreateRelationship(ctx, &graph.Relationship{
 		SourceID:    1,
 		TargetID:    2,
 		Type:        graph.RelIntroducedBy,
 		Weight:      5,
 		IsDirected:  true,
-		ContextNote: "РҐР°РєР°С‚РѕРЅ РђР»РјР°С‚С‹ 2025",
+		ContextNote: "Хакатон Алматы 2025",
 	})
 	_, _ = graphSvc.CreateRelationship(ctx, &graph.Relationship{
 		SourceID:    2,
@@ -82,7 +82,7 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 		Type:        graph.RelPartner,
 		Weight:      4,
 		IsDirected:  false,
-		ContextNote: "РЎРѕРІРјРµСЃС‚РЅС‹Р№ Р°РєСЃРµР»РµСЂР°С‚РѕСЂ",
+		ContextNote: "Совместный акселератор",
 	})
 	_ = graphSvc.ReloadGraph(ctx, false)
 	_ = graphSvc.RecalculateMetrics(ctx)
@@ -99,16 +99,16 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 	appUI := NewAppUIWithApp(headlessApp, cfg, cfgPath, svc, graphSvc, backupSched, localAPI)
 	appUI.mainWin.Resize(fyne.NewSize(1240, 780))
 
-	// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РґРІСѓС… РІРєР»Р°РґРѕРє: РљРѕРЅС‚Р°РєС‚С‹ Рё РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„
+	// Проверяем наличие двух вкладок: Контакты и Социальный граф
 	if len(appUI.tabs.Items) != 2 {
-		t.Fatalf("РѕР¶РёРґР°Р»РѕСЃСЊ 2 РІРєР»Р°РґРєРё РїСЂРёР»РѕР¶РµРЅРёСЏ, РїРѕР»СѓС‡РµРЅРѕ %d", len(appUI.tabs.Items))
+		t.Fatalf("ожидалось 2 вкладки приложения, получено %d", len(appUI.tabs.Items))
 	}
 
-	// РџРµСЂРµРєР»СЋС‡Р°РµРјСЃСЏ РЅР° РІРєР»Р°РґРєСѓ В«РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„В»
+	// Переключаемся на вкладку «Социальный граф»
 	appUI.tabs.SelectIndex(1)
 	appUI.graphView.RefreshData()
 
-	// РџСЂРѕРІРµСЂСЏРµРј Р·Р°С…РІР°С‚ СЃРєСЂРёРЅС€РѕС‚РѕРІ
+	// Проверяем захват скриншотов
 	outDir := os.Getenv("GOCONTACT_SCREENSHOT_DIR")
 	if outDir == "" {
 		if os.Getenv("CAPTURE_SCREENSHOTS") == "1" {
@@ -118,15 +118,15 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 		}
 	}
 
-	// 1. РЎРєСЂРёРЅС€РѕС‚ СЂРµР¶РёРјР° Force Graph
+	// 1. Скриншот режима Force Graph
 	saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_social_graph_force.png"))
 
-	// 2. РЎРєСЂРёРЅС€РѕС‚ СЂРµР¶РёРјР° Dunbar Orbits
-	appUI.graphView.modeSelect.SetSelected("РћСЂР±РёС‚С‹ Р”Р°РЅР±Р°СЂР°")
+	// 2. Скриншот режима Dunbar Orbits
+	appUI.graphView.modeSelect.SetSelected("Орбиты Данбара")
 	saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_social_graph_dunbar.png"))
 
-	// 3. РЎРєСЂРёРЅС€РѕС‚ РїРѕРёСЃРєР° С†РµРїРѕС‡РєРё РёРЅС‚СЂРѕ (Dijkstra)
-	appUI.graphView.modeSelect.SetSelected("РЎРёР»РѕРІРѕР№ РіСЂР°С„")
+	// 3. Скриншот поиска цепочки интро (Dijkstra)
+	appUI.graphView.modeSelect.SetSelected("Силовой граф")
 	if len(appUI.graphView.sourceSelect.Options) >= 2 {
 		appUI.graphView.sourceSelect.SetSelected(appUI.graphView.sourceSelect.Options[0])
 		appUI.graphView.targetSelect.SetSelected(appUI.graphView.targetSelect.Options[1])
@@ -134,7 +134,7 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 		saveCanvasPNG(t, appUI.mainWin, filepath.Join(outDir, "ui_warm_intro_path.png"))
 	}
 
-	// Р’РѕР·РІСЂР°С‰Р°РµРјСЃСЏ РЅР° РІРєР»Р°РґРєСѓ РљРѕРЅС‚Р°РєС‚С‹ Рё РїСЂРѕРІРµСЂСЏРµРј РєР°СЂС‚РѕС‡РєСѓ СЃРІСЏР·РµР№
+	// Возвращаемся на вкладку Контакты и проверяем карточку связей
 	appUI.tabs.SelectIndex(0)
 	if len(appUI.contacts) > 0 {
 		appUI.renderDetailPanel(appUI.contacts[0])
@@ -148,27 +148,27 @@ func TestSocialGraphCanvas_Interactions(t *testing.T) {
 	canvas := NewSocialGraphCanvas(graphSvc)
 	canvas.Resize(fyne.NewSize(800, 600))
 
-	// РџСЂРѕРІРµСЂСЏРµРј Р·СѓРј Рё РїР°РЅРѕСЂР°РјРёСЂРѕРІР°РЅРёРµ
+	// Проверяем зум и панорамирование
 	canvas.Scrolled(&fyne.ScrollEvent{Scrolled: fyne.NewDelta(0, 2)})
 	if canvas.zoom <= 1.0 {
-		t.Errorf("РѕР¶РёРґР°Р»РѕСЃСЊ СѓРІРµР»РёС‡РµРЅРёРµ Р·СѓРјР°, С‚РµРєСѓС‰РёР№ Р·СѓРј: %f", canvas.zoom)
+		t.Errorf("ожидалось увеличение зума, текущий зум: %f", canvas.zoom)
 	}
 
 	canvas.ResetCamera()
 	if canvas.zoom != 1.0 || canvas.panX != 0 || canvas.panY != 0 {
-		t.Errorf("РѕС€РёР±РєР° СЃР±СЂРѕСЃР° РєР°РјРµСЂС‹: zoom=%f, panX=%f, panY=%f", canvas.zoom, canvas.panX, canvas.panY)
+		t.Errorf("ошибка сброса камеры: zoom=%f, panX=%f, panY=%f", canvas.zoom, canvas.panX, canvas.panY)
 	}
 
-	// РџСЂРѕРІРµСЂСЏРµРј С„РёР»СЊС‚СЂР°С†РёСЋ РѕСЂР±РёС‚
+	// Проверяем фильтрацию орбит
 	canvas.SetDunbarFilter(graph.DunbarSupportClique)
 	if canvas.dunbarFilter != graph.DunbarSupportClique {
-		t.Errorf("РѕР¶РёРґР°Р»СЃСЏ С„РёР»СЊС‚СЂ DunbarSupportClique, РїРѕР»СѓС‡РµРЅРѕ %v", canvas.dunbarFilter)
+		t.Errorf("ожидался фильтр DunbarSupportClique, получено %v", canvas.dunbarFilter)
 	}
 
-	// РџСЂРѕРІРµСЂСЏРµРј РєР»РёРє РїРѕ РїСѓСЃС‚РѕРјСѓ С„РѕРЅСѓ
+	// Проверяем клик по пустому фону
 	canvas.Tapped(&fyne.PointEvent{Position: fyne.NewPos(10, 10)})
 	if canvas.selectedNodeID != 0 {
-		t.Errorf("РѕР¶РёРґР°Р»СЃСЏ СЃР±СЂРѕСЃ РІС‹Р±СЂР°РЅРЅРѕРіРѕ СѓР·Р»Р°, РїРѕР»СѓС‡РµРЅРѕ %d", canvas.selectedNodeID)
+		t.Errorf("ожидался сброс выбранного узла, получено %d", canvas.selectedNodeID)
 	}
 }
 

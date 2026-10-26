@@ -19,15 +19,15 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
-// GraphMode РѕРїСЂРµРґРµР»СЏРµС‚ СЂРµР¶РёРј РІРёР·СѓР°Р»РёР·Р°С†РёРё СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р°.
+// GraphMode определяет режим визуализации социального графа.
 type GraphMode int
 
 const (
-	GraphModeForce  GraphMode = iota // РЎРёР»РѕРІР°СЏ СѓРєР»Р°РґРєР° Barnes-Hut
-	GraphModeDunbar                  // РљРѕРЅС†РµРЅС‚СЂРёС‡РµСЃРєРёРµ РѕСЂР±РёС‚С‹ Р”Р°РЅР±Р°СЂР°
+	GraphModeForce  GraphMode = iota // Силовая укладка Barnes-Hut
+	GraphModeDunbar                  // Концентрические орбиты Данбара
 )
 
-// РўРѕРєРµРЅС‹ РїР°Р»РёС‚СЂС‹ С‚РµРјС‹ StudioTheme РґР»СЏ РіСЂР°С„Р°
+// Токены палитры темы StudioTheme для графа
 var (
 	colorCanvasBgDark   = color.NRGBA{R: 15, G: 20, B: 28, A: 255}    // #0F141C
 	colorCanvasBgLight  = color.NRGBA{R: 248, G: 250, B: 252, A: 255} // #F8FAFC
@@ -35,9 +35,9 @@ var (
 	colorOrbitRingLight = color.NRGBA{R: 226, G: 232, B: 240, A: 220} // #E2E8F0
 	colorEdgeDefault    = color.NRGBA{R: 71, G: 85, B: 105, A: 160}   // #475569
 	colorEdgeImplicit   = color.NRGBA{R: 51, G: 65, B: 85, A: 120}    // #334155
-	colorEdgeIntroPath  = color.NRGBA{R: 16, G: 185, B: 129, A: 255}  // #10B981 (РР·СѓРјСЂСѓРґРЅС‹Р№)
-	colorNodeBroker     = color.NRGBA{R: 245, G: 158, B: 11, A: 255}  // #F59E0B (Р—РѕР»РѕС‚Рѕ)
-	colorNodeSelected   = color.NRGBA{R: 56, G: 189, B: 248, A: 255}  // #38BDF8 (РќРµР±РµСЃРЅС‹Р№)
+	colorEdgeIntroPath  = color.NRGBA{R: 16, G: 185, B: 129, A: 255}  // #10B981 (Изумрудный)
+	colorNodeBroker     = color.NRGBA{R: 245, G: 158, B: 11, A: 255}  // #F59E0B (Золото)
+	colorNodeSelected   = color.NRGBA{R: 56, G: 189, B: 248, A: 255}  // #38BDF8 (Небесный)
 
 	communityColors = []color.NRGBA{
 		{R: 99, G: 102, B: 241, A: 255}, // #6366F1 Indigo
@@ -49,8 +49,8 @@ var (
 	}
 )
 
-// SocialGraphCanvas вЂ” РєР°СЃС‚РѕРјРЅС‹Р№ РёРЅС‚РµСЂР°РєС‚РёРІРЅС‹Р№ РІРёРґР¶РµС‚ РІРёР·СѓР°Р»РёР·Р°С†РёРё СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р° РЅР° Fyne v2 Canvas.
-// РџРѕРґРґРµСЂР¶РёРІР°РµС‚ Pan, Zoom (0.2x..3.0x), Drag СѓР·Р»РѕРІ, Tooltip РїСЂРё РЅР°РІРµРґРµРЅРёРё, РІС‹Р±РѕСЂ СѓР·Р»РѕРІ Рё РїРѕРґСЃРІРµС‚РєСѓ РїСѓС‚Рё РёРЅС‚СЂРѕ.
+// SocialGraphCanvas — кастомный интерактивный виджет визуализации социального графа на Fyne v2 Canvas.
+// Поддерживает Pan, Zoom (0.2x..3.0x), Drag узлов, Tooltip при наведении, выбор узлов и подсветку пути интро.
 type SocialGraphCanvas struct {
 	widget.BaseWidget
 	mu sync.RWMutex
@@ -58,30 +58,30 @@ type SocialGraphCanvas struct {
 	graphService sna.GraphService
 	mode         GraphMode
 
-	// РљР°РјРµСЂР° Рё Р°С„С„РёРЅРЅС‹Рµ С‚СЂР°РЅСЃС„РѕСЂРјР°С†РёРё
+	// Камера и аффинные трансформации
 	panX, panY float32
-	zoom       float32 // Р”РёР°РїР°Р·РѕРЅ [0.20 .. 3.00]
+	zoom       float32 // Диапазон [0.20 .. 3.00]
 
-	// РРЅС‚РµСЂР°РєС‚РёРІРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+	// Интерактивное состояние
 	selectedNodeID  int64
 	hoveredNodeID   int64
 	draggedNodeID   int64
 	isDraggingWorld bool
 	lastDragPos     fyne.Position
 
-	// Р¤РёР»СЊС‚СЂС‹ Рё РїРѕРґСЃРІРµС‚РєР°
+	// Фильтры и подсветка
 	dunbarFilter     graph.DunbarTier
 	showImplicit     bool
 	highlightedNodes map[int64]bool
 	highlightedEdges map[string]bool
 
-	// РљРѕР»Р±СЌРєРё
+	// Колбэки
 	OnNodeSelected func(nodeID int64)
 	OnCanvasTapped func()
 	OnHoverChanged func(node *graph.Node)
 }
 
-// NewSocialGraphCanvas СЃРѕР·РґР°С‘С‚ Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ РІРёРґР¶РµС‚ С…РѕР»СЃС‚Р° РіСЂР°С„Р°.
+// NewSocialGraphCanvas создаёт и инициализирует виджет холста графа.
 func NewSocialGraphCanvas(svc sna.GraphService) *SocialGraphCanvas {
 	c := &SocialGraphCanvas{
 		graphService:     svc,
@@ -96,7 +96,7 @@ func NewSocialGraphCanvas(svc sna.GraphService) *SocialGraphCanvas {
 	return c
 }
 
-// SetMode РїРµСЂРµРєР»СЋС‡Р°РµС‚ СЂРµР¶РёРј РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ: СЃРёР»РѕРІРѕР№ РіСЂР°С„ РёР»Рё РѕСЂР±РёС‚С‹ Р”Р°РЅР±Р°СЂР°.
+// SetMode переключает режим отображения: силовой граф или орбиты Данбара.
 func (c *SocialGraphCanvas) SetMode(m GraphMode) {
 	c.mu.Lock()
 	c.mode = m
@@ -104,7 +104,7 @@ func (c *SocialGraphCanvas) SetMode(m GraphMode) {
 	c.Refresh()
 }
 
-// SetDunbarFilter С„РёР»СЊС‚СЂСѓРµС‚ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ СѓР·Р»РѕРІ РїРѕ РєСЂСѓРіСѓ Р”Р°РЅР±Р°СЂР° (0 = РІСЃРµ).
+// SetDunbarFilter фильтрует отображение узлов по кругу Данбара (0 = все).
 func (c *SocialGraphCanvas) SetDunbarFilter(tier graph.DunbarTier) {
 	c.mu.Lock()
 	c.dunbarFilter = tier
@@ -112,7 +112,7 @@ func (c *SocialGraphCanvas) SetDunbarFilter(tier graph.DunbarTier) {
 	c.Refresh()
 }
 
-// SetShowImplicit РІРєР»СЋС‡Р°РµС‚ РёР»Рё РѕС‚РєР»СЋС‡Р°РµС‚ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РЅРµСЏРІРЅС‹С… СЃРІСЏР·РµР№ РїРѕ РєРѕРјРїР°РЅРёРё.
+// SetShowImplicit включает или отключает отображение неявных связей по компании.
 func (c *SocialGraphCanvas) SetShowImplicit(show bool) {
 	c.mu.Lock()
 	c.showImplicit = show
@@ -120,7 +120,7 @@ func (c *SocialGraphCanvas) SetShowImplicit(show bool) {
 	c.Refresh()
 }
 
-// ResetCamera С†РµРЅС‚СЂРёСЂСѓРµС‚ РєР°РјРµСЂСѓ Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ 100% РјР°СЃС€С‚Р°Р±.
+// ResetCamera центрирует камеру и устанавливает 100% масштаб.
 func (c *SocialGraphCanvas) ResetCamera() {
 	c.mu.Lock()
 	c.panX = 0
@@ -130,7 +130,7 @@ func (c *SocialGraphCanvas) ResetCamera() {
 	c.Refresh()
 }
 
-// HighlightIntroPath РїРѕРґСЃРІРµС‡РёРІР°РµС‚ С†РµРїРѕС‡РєСѓ С‚С‘РїР»РѕРіРѕ РёРЅС‚СЂРѕ РЅР° С…РѕР»СЃС‚Рµ РёР·СѓРјСЂСѓРґРЅС‹Рј С†РІРµС‚РѕРј.
+// HighlightIntroPath подсвечивает цепочку тёплого интро на холсте изумрудным цветом.
 func (c *SocialGraphCanvas) HighlightIntroPath(path *graph.IntroPath) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -158,7 +158,7 @@ func (c *SocialGraphCanvas) HighlightIntroPath(path *graph.IntroPath) {
 	c.Refresh()
 }
 
-// ClearPathHighlight РѕС‡РёС‰Р°РµС‚ РїРѕРґСЃРІРµС‚РєСѓ С†РµРїРѕС‡РєРё РёРЅС‚СЂРѕ.
+// ClearPathHighlight очищает подсветку цепочки интро.
 func (c *SocialGraphCanvas) ClearPathHighlight() {
 	c.mu.Lock()
 	c.highlightedNodes = make(map[int64]bool)
@@ -167,7 +167,7 @@ func (c *SocialGraphCanvas) ClearPathHighlight() {
 	c.Refresh()
 }
 
-// SelectNode РїСЂРѕРіСЂР°РјРјРЅРѕ РІС‹Р±РёСЂР°РµС‚ СѓР·РµР» РЅР° С…РѕР»СЃС‚Рµ.
+// SelectNode программно выбирает узел на холсте.
 func (c *SocialGraphCanvas) SelectNode(nodeID int64) {
 	c.mu.Lock()
 	c.selectedNodeID = nodeID
@@ -176,13 +176,13 @@ func (c *SocialGraphCanvas) SelectNode(nodeID int64) {
 }
 
 // -----------------------------------------------------------------------------
-// Р РµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂР°РєС‚РёРІРЅС‹С… РёРЅС‚РµСЂС„РµР№СЃРѕРІ Fyne v2
+// Реализация интерактивных интерфейсов Fyne v2
 // -----------------------------------------------------------------------------
 
-// MouseIn РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РІС…РѕРґ РєСѓСЂСЃРѕСЂР° РІ РіСЂР°РЅРёС†С‹ С…РѕР»СЃС‚Р°.
+// MouseIn обрабатывает вход курсора в границы холста.
 func (c *SocialGraphCanvas) MouseIn(e *desktop.MouseEvent) {}
 
-// MouseMoved РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РїРµСЂРµРјРµС‰РµРЅРёРµ РєСѓСЂСЃРѕСЂР° РґР»СЏ РїРѕРґСЃРІРµС‚РєРё СѓР·Р»Р° (Hover).
+// MouseMoved обрабатывает перемещение курсора для подсветки узла (Hover).
 func (c *SocialGraphCanvas) MouseMoved(e *desktop.MouseEvent) {
 	node := c.findNodeAt(e.Position, c.Size())
 	c.mu.Lock()
@@ -202,7 +202,7 @@ func (c *SocialGraphCanvas) MouseMoved(e *desktop.MouseEvent) {
 	c.mu.Unlock()
 }
 
-// MouseOut СЃР±СЂР°СЃС‹РІР°РµС‚ СЃРѕСЃС‚РѕСЏРЅРёРµ Hover РїСЂРё СѓС…РѕРґРµ РєСѓСЂСЃРѕСЂР° СЃ С…РѕР»СЃС‚Р°.
+// MouseOut сбрасывает состояние Hover при уходе курсора с холста.
 func (c *SocialGraphCanvas) MouseOut() {
 	c.mu.Lock()
 	if c.hoveredNodeID != 0 {
@@ -217,13 +217,13 @@ func (c *SocialGraphCanvas) MouseOut() {
 	c.mu.Unlock()
 }
 
-// Dragged РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРµ СѓР·Р»Р° РёР»Рё РїР°РЅРѕСЂР°РјРёСЂРѕРІР°РЅРёРµ С…РѕР»СЃС‚Р° (Pan).
+// Dragged обрабатывает перетаскивание узла или панорамирование холста (Pan).
 func (c *SocialGraphCanvas) Dragged(e *fyne.DragEvent) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	if c.draggedNodeID == 0 && !c.isDraggingWorld {
-		// РќР°С‡Р°Р»Рѕ РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёСЏ: РїСЂРѕРІРµСЂСЏРµРј СѓР·РµР» РїРѕРґ РєСѓСЂСЃРѕСЂРѕРј
+		// Начало перетаскивания: проверяем узел под курсором
 		node := c.findNodeAt(e.Position, c.Size())
 		if node != nil {
 			c.draggedNodeID = node.ContactID
@@ -233,7 +233,7 @@ func (c *SocialGraphCanvas) Dragged(e *fyne.DragEvent) {
 	}
 
 	if c.draggedNodeID > 0 {
-		// РџРµСЂРµС‚Р°СЃРєРёРІР°РµРј СѓР·РµР»: РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ РјРёСЂРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
+		// Перетаскиваем узел: конвертируем в мировые координаты
 		wx, wy := c.screenToWorld(e.Position, c.Size())
 		if c.graphService != nil {
 			c.graphService.MoveNode(c.draggedNodeID, wx, wy)
@@ -243,14 +243,14 @@ func (c *SocialGraphCanvas) Dragged(e *fyne.DragEvent) {
 	}
 
 	if c.isDraggingWorld {
-		// РџР°РЅРѕСЂР°РјРёСЂСѓРµРј С…РѕР»СЃС‚
+		// Панорамируем холст
 		c.panX += e.Dragged.DX / c.zoom
 		c.panY += e.Dragged.DY / c.zoom
 		c.Refresh()
 	}
 }
 
-// DragEnd С„РёРєСЃРёСЂСѓРµС‚ СѓР·РµР» РёР»Рё Р·Р°РІРµСЂС€Р°РµС‚ РїР°РЅРѕСЂР°РјРёСЂРѕРІР°РЅРёРµ.
+// DragEnd фиксирует узел или завершает панорамирование.
 func (c *SocialGraphCanvas) DragEnd() {
 	c.mu.Lock()
 	draggedID := c.draggedNodeID
@@ -259,13 +259,13 @@ func (c *SocialGraphCanvas) DragEnd() {
 	c.mu.Unlock()
 
 	if draggedID > 0 && c.graphService != nil {
-		// РџРѕРґРѕРіСЂРµРІР°РµРј СЃРёРјСѓР»СЏС†РёСЋ РґР»СЏ РїР»Р°РІРЅРѕР№ СЂРµР»Р°РєСЃР°С†РёРё
+		// Подогреваем симуляцию для плавной релаксации
 		c.graphService.ReheatSimulation(0.35)
 	}
 	c.Refresh()
 }
 
-// Scrolled РјР°СЃС€С‚Р°Р±РёСЂСѓРµС‚ С…РѕР»СЃС‚ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РєСѓСЂСЃРѕСЂР° (Zoom 0.20x .. 3.00x).
+// Scrolled масштабирует холст относительно курсора (Zoom 0.20x .. 3.00x).
 func (c *SocialGraphCanvas) Scrolled(e *fyne.ScrollEvent) {
 	c.mu.Lock()
 	delta := e.Scrolled.DY * 0.05
@@ -281,7 +281,7 @@ func (c *SocialGraphCanvas) Scrolled(e *fyne.ScrollEvent) {
 	c.Refresh()
 }
 
-// Tapped РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚ РѕРґРёРЅРѕС‡РЅС‹Р№ РєР»РёРє РґР»СЏ РІС‹Р±РѕСЂР° СѓР·Р»Р° РёР»Рё СЃР±СЂРѕСЃР° РІС‹РґРµР»РµРЅРёСЏ.
+// Tapped обрабатывает одиночный клик для выбора узла или сброса выделения.
 func (c *SocialGraphCanvas) Tapped(e *fyne.PointEvent) {
 	node := c.findNodeAt(e.Position, c.Size())
 	c.mu.Lock()
@@ -302,7 +302,7 @@ func (c *SocialGraphCanvas) Tapped(e *fyne.PointEvent) {
 }
 
 // -----------------------------------------------------------------------------
-// РђС„С„РёРЅРЅС‹Рµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ СЌРєСЂР°РЅРЅС‹С… Рё РјРёСЂРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚
+// Аффинные преобразования экранных и мировых координат
 // -----------------------------------------------------------------------------
 
 func (c *SocialGraphCanvas) worldToScreen(wx, wy float64, size fyne.Size) fyne.Position {
@@ -378,20 +378,20 @@ func calculateDunbarOrbitPos(n *graph.Node, allNodes map[int64]*graph.Node) (flo
 		radius = 360.0
 	}
 
-	// Р”РµС‚РµСЂРјРёРЅРёСЂРѕРІР°РЅРЅС‹Р№ СѓРіРѕР» РїРѕ ContactID РґР»СЏ СЃС‚Р°Р±РёР»СЊРЅРѕРіРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ РЅР° РєРѕР»СЊС†Рµ
+	// Детерминированный угол по ContactID для стабильного расположения на кольце
 	angle := float64(n.ContactID%360) * (math.Pi / 180.0) * 1.61803398875
 	return radius * math.Cos(angle), radius * math.Sin(angle)
 }
 
 // -----------------------------------------------------------------------------
-// Р РµРЅРґРµСЂРµСЂ РІРёРґР¶РµС‚Р° (fyne.WidgetRenderer)
+// Рендерер виджета (fyne.WidgetRenderer)
 // -----------------------------------------------------------------------------
 
-// CreateRenderer СЃРѕР·РґР°С‘С‚ СЃРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Р№ СЂРµРЅРґРµСЂРµСЂ Fyne РґР»СЏ С…РѕР»СЃС‚Р°.
+// CreateRenderer создаёт специализированный рендерер Fyne для холста.
 func (c *SocialGraphCanvas) CreateRenderer() fyne.WidgetRenderer {
 	bg := canvas.NewRectangle(colorCanvasBgDark)
 
-	// РљРѕРЅС‚РµР№РЅРµСЂС‹ СЃР»РѕС‘РІ РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РїРµСЂРµРёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
+	// Контейнеры слоёв для быстрого переиспользования
 	orbitLayer := container.NewWithoutLayout()
 	edgeLayer := container.NewWithoutLayout()
 	nodeLayer := container.NewWithoutLayout()
@@ -447,23 +447,23 @@ func (r *graphCanvasRenderer) Refresh() {
 		return
 	}
 
-	// 1. РћС‡РёСЃС‚РєР° СЃР»РѕС‘РІ
+	// 1. Очистка слоёв
 	r.orbitLayer.Objects = nil
 	r.edgeLayer.Objects = nil
 	r.nodeLayer.Objects = nil
 	r.tooltipLayer.Objects = nil
 
-	// 2. РћС‚СЂРёСЃРѕРІРєР° РєРѕРЅС†РµРЅС‚СЂРёС‡РµСЃРєРёС… РѕСЂР±РёС‚ Р”Р°РЅР±Р°СЂР° (РІ СЂРµР¶РёРјРµ Dunbar)
+	// 2. Отрисовка концентрических орбит Данбара (в режиме Dunbar)
 	if r.canvas.mode == GraphModeDunbar {
 		tiers := []struct {
 			radius float32
 			label  string
 		}{
-			{70, "РћСЂР±РёС‚Р° 5 (РЇРґСЂРѕ)"},
-			{135, "РћСЂР±РёС‚Р° 15 (РЎРёРјРїР°С‚РёСЏ)"},
-			{205, "РћСЂР±РёС‚Р° 50 (Р”РѕРІРµСЂРёРµ)"},
-			{280, "РћСЂР±РёС‚Р° 150 (РђРєС‚РёРІРЅР°СЏ СЃРµС‚СЊ)"},
-			{360, "РћСЂР±РёС‚Р° 500 (Р—РЅР°РєРѕРјС‹Рµ)"},
+			{70, "Орбита 5 (Ядро)"},
+			{135, "Орбита 15 (Симпатия)"},
+			{205, "Орбита 50 (Доверие)"},
+			{280, "Орбита 150 (Активная сеть)"},
+			{360, "Орбита 500 (Знакомые)"},
 		}
 
 		cx := size.Width/2.0 + r.canvas.panX*r.canvas.zoom
@@ -494,7 +494,7 @@ func (r *graphCanvasRenderer) Refresh() {
 	nodesMap, edges, _ := r.canvas.graphService.GetTopologySnapshot()
 	snap := r.canvas.graphService.GetLatestSnapshot()
 
-	// РљСЌС€ СЌРєСЂР°РЅРЅС‹С… РїРѕР·РёС†РёР№ СѓР·Р»РѕРІ РЅР° СЌС‚РѕРј РєР°РґСЂРµ
+	// Кэш экранных позиций узлов на этом кадре
 	screenPositions := make(map[int64]fyne.Position, len(nodesMap))
 	for id, n := range nodesMap {
 		if r.canvas.dunbarFilter > 0 && n.DunbarTier > r.canvas.dunbarFilter {
@@ -515,7 +515,7 @@ func (r *graphCanvasRenderer) Refresh() {
 		screenPositions[id] = r.canvas.worldToScreen(wx, wy, size)
 	}
 
-	// 3. РћС‚СЂРёСЃРѕРІРєР° СЂС‘Р±РµСЂ РіСЂР°С„Р°
+	// 3. Отрисовка рёбер графа
 	for _, e := range edges {
 		if e == nil {
 			continue
@@ -549,7 +549,7 @@ func (r *graphCanvasRenderer) Refresh() {
 		r.edgeLayer.Add(line)
 	}
 
-	// 4. РћС‚СЂРёСЃРѕРІРєР° СѓР·Р»РѕРІ (РєСЂСѓР¶РєРё + РёРЅРёС†РёР°Р»С‹ + Р±РµР№РґР¶Рё)
+	// 4. Отрисовка узлов (кружки + инициалы + бейджи)
 	nodeRadius := float32(14.0 * math.Max(0.7, math.Min(1.6, float64(r.canvas.zoom))))
 
 	for id, n := range nodesMap {
@@ -558,7 +558,7 @@ func (r *graphCanvasRenderer) Refresh() {
 			continue
 		}
 
-		// Р’РЅРµС€РЅСЏСЏ РѕР±РІРѕРґРєР° (Р‘СЂРѕРєРµСЂ СЃРµС‚Рё РёР»Рё Р’С‹РґРµР»РµРЅРёРµ)
+		// Внешняя обводка (Брокер сети или Выделение)
 		isBroker := n.BetweennessScore > 0.30
 		isSelected := r.canvas.selectedNodeID == id
 		isHighlighted := r.canvas.highlightedNodes[id]
@@ -578,7 +578,7 @@ func (r *graphCanvasRenderer) Refresh() {
 			r.nodeLayer.Add(outerRing)
 		}
 
-		// РўРµР»Рѕ СѓР·Р»Р° СЃ С†РІРµС‚РѕРј СЃРѕРѕР±С‰РµСЃС‚РІР°
+		// Тело узла с цветом сообщества
 		commIdx := n.CommunityID % len(communityColors)
 		if commIdx < 0 {
 			commIdx = 0
@@ -588,7 +588,7 @@ func (r *graphCanvasRenderer) Refresh() {
 		nodeCircle.Move(fyne.NewPos(sp.X-nodeRadius, sp.Y-nodeRadius))
 		r.nodeLayer.Add(nodeCircle)
 
-		// РРЅРёС†РёР°Р»С‹ СѓР·Р»Р° (LOD: СЃРєСЂС‹РІР°РµРј РїСЂРё zoom < 0.45)
+		// Инициалы узла (LOD: скрываем при zoom < 0.45)
 		if r.canvas.zoom >= 0.45 {
 			txt := canvas.NewText(n.AvatarInitials, color.White)
 			txt.TextSize = nodeRadius * 0.85
@@ -598,7 +598,7 @@ func (r *graphCanvasRenderer) Refresh() {
 			r.nodeLayer.Add(txt)
 		}
 
-		// РўРµРєСЃС‚РѕРІР°СЏ РїРѕРґРїРёСЃСЊ РёРјРµРЅРё РїРѕРґ СѓР·Р»РѕРј РїСЂРё РЅРѕСЂРјР°Р»СЊРЅРѕРј РјР°СЃС€С‚Р°Р±Рµ
+		// Текстовая подпись имени под узлом при нормальном масштабе
 		if r.canvas.zoom >= 0.75 {
 			nameLabel := canvas.NewText(n.FullName, color.NRGBA{R: 226, G: 232, B: 240, A: 240})
 			nameLabel.TextSize = 10
@@ -608,7 +608,7 @@ func (r *graphCanvasRenderer) Refresh() {
 		}
 	}
 
-	// 5. РћС‚СЂРёСЃРѕРІРєР° РїР»Р°РІР°СЋС‰РµРіРѕ С‚СѓР»С‚РёРїР° РґР»СЏ hovered СѓР·Р»Р°
+	// 5. Отрисовка плавающего тултипа для hovered узла
 	if r.canvas.hoveredNodeID > 0 {
 		if hNode, ok := nodesMap[r.canvas.hoveredNodeID]; ok {
 			if sp, ok := screenPositions[r.canvas.hoveredNodeID]; ok {
@@ -617,7 +617,7 @@ func (r *graphCanvasRenderer) Refresh() {
 				tipBg.StrokeColor = color.NRGBA{R: 51, G: 65, B: 85, A: 255}
 				tipBg.StrokeWidth = 1.0
 
-				infoText := fmt.Sprintf("%s\n%s вЂў %s", hNode.FullName, valueOrDash(hNode.Company), hNode.DunbarTier.Label())
+				infoText := fmt.Sprintf("%s\n%s • %s", hNode.FullName, valueOrDash(hNode.Company), hNode.DunbarTier.Label())
 				tipTxt := canvas.NewText(infoText, color.White)
 				tipTxt.TextSize = 11
 

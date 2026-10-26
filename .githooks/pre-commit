@@ -54,5 +54,10 @@ if [ -n "$DOMAIN_FILES" ]; then
     fi
 fi
 
+# 4. Anti-Mojibake check: verify zero double-encoded UTF-8 in repository
+if command -v powershell.exe >/dev/null 2>&1 && [ -f ".agents/scripts/check-encoding.ps1" ]; then
+    powershell.exe -ExecutionPolicy Bypass -File .agents/scripts/check-encoding.ps1 || exit 1
+fi
+
 echo "✅ [HOOK: pre-commit] All checks passed cleanly."
 exit 0

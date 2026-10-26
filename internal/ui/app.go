@@ -21,7 +21,7 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
-// AppUI СѓРїСЂР°РІР»СЏРµС‚ РіР»Р°РІРЅС‹Рј РѕРєРЅРѕРј Рё РІСЃРµРјРё РіСЂР°С„РёС‡РµСЃРєРёРјРё РєРѕРјРїРѕРЅРµРЅС‚Р°РјРё Fyne v2.
+// AppUI управляет главным окном и всеми графическими компонентами Fyne v2.
 type AppUI struct {
 	cfg             *config.Config
 	configPath      string
@@ -34,17 +34,17 @@ type AppUI struct {
 	mainWin   fyne.Window
 	themeMode string
 
-	// РќР°РІРёРіР°С†РёСЏ Рё РІРєР»Р°РґРєРё
+	// Навигация и вкладки
 	tabs      *container.AppTabs
 	graphView *GraphView
 
-	// РЎРѕСЃС‚РѕСЏРЅРёРµ С„РёР»СЊС‚СЂРѕРІ Рё РґР°РЅРЅС‹С…
+	// Состояние фильтров и данных
 	currentFilter   domain.ContactFilter
 	contacts        []*domain.Contact
 	groups          []*domain.Group
 	selectedContact *domain.Contact
 
-	// Р’РёРґР¶РµС‚С‹ РёРЅС‚РµСЂС„РµР№СЃР°
+	// Виджеты интерфейса
 	searchEntry       *widget.Entry
 	sortSelect        *widget.Select
 	citySelect        *widget.Select
@@ -57,7 +57,7 @@ type AppUI struct {
 	progressBar       *widget.ProgressBar
 }
 
-// NewAppUI СЃРѕР·РґР°С‘С‚ Рё РЅР°СЃС‚СЂР°РёРІР°РµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РїСЂРёР»РѕР¶РµРЅРёРµ СЃ РїРѕРґРґРµСЂР¶РєРѕР№ СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р°.
+// NewAppUI создаёт и настраивает графическое приложение с поддержкой социального графа.
 func NewAppUI(
 	cfg *config.Config,
 	configPath string,
@@ -70,7 +70,7 @@ func NewAppUI(
 	return NewAppUIWithApp(fyneApp, cfg, configPath, svc, graphSvc, backupSched, apiServer)
 }
 
-// NewAppUIWithApp РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ РїРѕР»РЅС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ РЅР° РїРµСЂРµРґР°РЅРЅРѕРј СЌРєР·РµРјРїР»СЏСЂРµ fyne.App (СѓРґРѕР±РЅРѕ РґР»СЏ Headless-С‚РµСЃС‚РѕРІ).
+// NewAppUIWithApp инициализирует полный интерфейс на переданном экземпляре fyne.App (удобно для Headless-тестов).
 func NewAppUIWithApp(
 	fyneApp fyne.App,
 	cfg *config.Config,
@@ -113,12 +113,12 @@ func NewAppUIWithApp(
 	return ui
 }
 
-// Run Р·Р°РїСѓСЃРєР°РµС‚ РіР»Р°РІРЅС‹Р№ С†РёРєР» СЃРѕР±С‹С‚РёР№ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°.
+// Run запускает главный цикл событий графического окна.
 func (u *AppUI) Run() {
 	u.mainWin.ShowAndRun()
 }
 
-// SelectContactInMainTab РїРµСЂРµРєР»СЋС‡Р°РµС‚ РёРЅС‚РµСЂС„РµР№СЃ РЅР° РїРµСЂРІСѓСЋ РІРєР»Р°РґРєСѓ Рё РІС‹Р±РёСЂР°РµС‚ СѓРєР°Р·Р°РЅРЅС‹Р№ РєРѕРЅС‚Р°РєС‚.
+// SelectContactInMainTab переключает интерфейс на первую вкладку и выбирает указанный контакт.
 func (u *AppUI) SelectContactInMainTab(c *domain.Contact) {
 	if u.tabs != nil {
 		u.tabs.SelectIndex(0)
@@ -136,23 +136,23 @@ func (u *AppUI) buildUI() {
 	centerPanel := u.buildContactListPanel()
 	u.renderDetailPanel(nil)
 
-	// РџСЂР°РІР°СЏ С‡Р°СЃС‚СЊ: РЎРїРёСЃРѕРє РєРѕРЅС‚Р°РєС‚РѕРІ (Master) + РљР°СЂС‚РѕС‡РєР° РєРѕРЅС‚Р°РєС‚Р° (Detail)
+	// Правая часть: Список контактов (Master) + Карточка контакта (Detail)
 	masterDetailSplit := container.NewHSplit(centerPanel, u.detailContainer)
 	masterDetailSplit.Offset = 0.39
 
-	// Р’РєР»Р°РґРєР° 1: Р“Р»Р°РІРЅС‹Р№ С‚СЂС‘С…РєРѕР»РѕРЅРѕС‡РЅС‹Р№ СЂРµРµСЃС‚СЂ РєРѕРЅС‚Р°РєС‚РѕРІ
+	// Вкладка 1: Главный трёхколоночный реестр контактов
 	contactsSplit := container.NewHSplit(sidebar, masterDetailSplit)
 	contactsSplit.Offset = 0.20
 
-	// Р’РєР»Р°РґРєР° 2: РРЅС‚РµСЂР°РєС‚РёРІРЅР°СЏ СЃСЂРµРґР° В«РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„В» (РЎРїСЂРёРЅС‚С‹ 2.3 & 2.4)
+	// Вкладка 2: Интерактивная среда «Социальный граф» (Спринты 2.3 & 2.4)
 	u.graphView = NewGraphView(u, u.service, u.graphService)
 
 	u.tabs = container.NewAppTabs(
-		container.NewTabItem("рџ“‡ РљРѕРЅС‚Р°РєС‚С‹", contactsSplit),
-		container.NewTabItem("рџ•ёпёЏ РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„", u.graphView.Container()),
+		container.NewTabItem("📇 Контакты", contactsSplit),
+		container.NewTabItem("🕸️ Социальный граф", u.graphView.Container()),
 	)
 	u.tabs.OnSelected = func(tab *container.TabItem) {
-		if tab.Text == "рџ•ёпёЏ РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„" && u.graphView != nil {
+		if tab.Text == "🕸️ Социальный граф" && u.graphView != nil {
 			u.graphView.RefreshData()
 		}
 	}
@@ -170,55 +170,55 @@ func (u *AppUI) buildUI() {
 }
 
 func (u *AppUI) buildMainMenu() *fyne.MainMenu {
-	fileMenu := fyne.NewMenu("Р¤Р°Р№Р»",
-		fyne.NewMenuItem("+ РќРѕРІС‹Р№ РєРѕРЅС‚Р°РєС‚...", func() {
+	fileMenu := fyne.NewMenu("Файл",
+		fyne.NewMenuItem("+ Новый контакт...", func() {
 			u.showContactFormDialog(nil)
 		}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("РРјРїРѕСЂС‚ РёР· С„Р°Р№Р»Р° (CSV / JSON / VCF)...", func() {
+		fyne.NewMenuItem("Импорт из файла (CSV / JSON / VCF)...", func() {
 			u.handleImportFileDialog()
 		}),
-		fyne.NewMenuItem("Р­РєСЃРїРѕСЂС‚ РІ JSON...", func() {
+		fyne.NewMenuItem("Экспорт в JSON...", func() {
 			u.handleExportDialog(".json")
 		}),
-		fyne.NewMenuItem("Р­РєСЃРїРѕСЂС‚ РІ CSV (Excel)...", func() {
+		fyne.NewMenuItem("Экспорт в CSV (Excel)...", func() {
 			u.handleExportDialog(".csv")
 		}),
-		fyne.NewMenuItem("Р­РєСЃРїРѕСЂС‚ РІ vCard (.vcf)...", func() {
+		fyne.NewMenuItem("Экспорт в vCard (.vcf)...", func() {
 			u.handleExportDialog(".vcf")
 		}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("РЎРѕР·РґР°С‚СЊ СЂРµР·РµСЂРІРЅСѓСЋ РєРѕРїРёСЋ СЃРµР№С‡Р°СЃ", func() {
+		fyne.NewMenuItem("Создать резервную копию сейчас", func() {
 			u.backupScheduler.TriggerNow()
 		}),
 	)
 
-	contactsMenu := fyne.NewMenu("РљРѕРЅС‚Р°РєС‚С‹",
-		fyne.NewMenuItem("РџРѕРєР°Р·Р°С‚СЊ РІСЃРµ РєРѕРЅС‚Р°РєС‚С‹", func() {
+	contactsMenu := fyne.NewMenu("Контакты",
+		fyne.NewMenuItem("Показать все контакты", func() {
 			u.resetFilters()
 		}),
-		fyne.NewMenuItem("в… РўРѕР»СЊРєРѕ РёР·Р±СЂР°РЅРЅС‹Рµ", func() {
+		fyne.NewMenuItem("★ Только избранные", func() {
 			u.favOnlyCheck.SetChecked(true)
 		}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("РЎРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ РєР°С‚РµРіРѕСЂРёСЋ...", func() {
+		fyne.NewMenuItem("Создать новую категорию...", func() {
 			u.showNewGroupDialog()
 		}),
-		fyne.NewMenuItem("РџРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ РєР°С‚РµРіРѕСЂРёСЋ...", func() {
+		fyne.NewMenuItem("Переименовать выбранную категорию...", func() {
 			u.showEditSelectedGroupDialog()
 		}),
-		fyne.NewMenuItem("РЈРґР°Р»РёС‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ РєР°С‚РµРіРѕСЂРёСЋ", func() {
+		fyne.NewMenuItem("Удалить выбранную категорию", func() {
 			u.handleDeleteSelectedGroup()
 		}),
 	)
 
-	toolsMenu := fyne.NewMenu("РЎРµС‚СЊ Рё Р“СЂР°С„",
-		fyne.NewMenuItem("РџРµСЂРµР№С‚Рё Рє РЎРѕС†РёР°Р»СЊРЅРѕРјСѓ РіСЂР°С„Сѓ", func() {
+	toolsMenu := fyne.NewMenu("Сеть и Граф",
+		fyne.NewMenuItem("Перейти к Социальному графу", func() {
 			if u.tabs != nil {
 				u.tabs.SelectIndex(1)
 			}
 		}),
-		fyne.NewMenuItem("РџРµСЂРµСЃС‡РёС‚Р°С‚СЊ SNA РјРµС‚СЂРёРєРё (Р‘СЂР°РЅРґРµСЃ/Р›СѓРІРµРЅ)", func() {
+		fyne.NewMenuItem("Пересчитать SNA метрики (Брандес/Лувен)", func() {
 			if u.graphService != nil {
 				go func() {
 					_ = u.graphService.RecalculateMetrics(context.Background())
@@ -226,28 +226,28 @@ func (u *AppUI) buildMainMenu() *fyne.MainMenu {
 						if u.graphView != nil {
 							u.graphView.RefreshData()
 						}
-						u.setStatus("РњРµС‚СЂРёРєРё СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р° СѓСЃРїРµС€РЅРѕ РїРµСЂРµСЃС‡РёС‚Р°РЅС‹")
+						u.setStatus("Метрики социального графа успешно пересчитаны")
 					})
 				}()
 			}
 		}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("Р—Р°РіСЂСѓР·РёС‚СЊ 5 РєРѕРЅС‚Р°РєС‚РѕРІ РёР· REST API (Worker Pool)", func() {
+		fyne.NewMenuItem("Загрузить 5 контактов из REST API (Worker Pool)", func() {
 			u.handleFetchFromAPI(5)
 		}),
-		fyne.NewMenuItem("РњРЅРѕРіРѕРїРѕС‚РѕС‡РЅС‹Р№ Р°СѓРґРёС‚ Р±Р°Р·С‹ (Goroutines)", func() {
+		fyne.NewMenuItem("Многопоточный аудит базы (Goroutines)", func() {
 			u.showAuditReportDialog()
 		}),
-		fyne.NewMenuItem("РўРµСЃС‚РёСЂРѕРІР°С‚СЊ Р»РѕРєР°Р»СЊРЅС‹Р№ REST API СЃРµСЂРІРµСЂ", func() {
+		fyne.NewMenuItem("Тестировать локальный REST API сервер", func() {
 			u.showLocalAPITesterDialog()
 		}),
 	)
 
-	viewMenu := fyne.NewMenu("Р’РёРґ Рё РЎРїСЂР°РІРєР°",
-		fyne.NewMenuItem("РџРµСЂРµРєР»СЋС‡РёС‚СЊ С‚РµРјСѓ (РўС‘РјРЅР°СЏ / РЎРІРµС‚Р»Р°СЏ)", func() {
+	viewMenu := fyne.NewMenu("Вид и Справка",
+		fyne.NewMenuItem("Переключить тему (Тёмная / Светлая)", func() {
 			u.toggleTheme()
 		}),
-		fyne.NewMenuItem("Рћ РїСЂРѕРіСЂР°РјРјРµ", func() {
+		fyne.NewMenuItem("О программе", func() {
 			u.showAboutDialog()
 		}),
 	)
@@ -256,20 +256,20 @@ func (u *AppUI) buildMainMenu() *fyne.MainMenu {
 }
 
 func (u *AppUI) buildTopBar() fyne.CanvasObject {
-	btnAdd := widget.NewButtonWithIcon("+ Р”РѕР±Р°РІРёС‚СЊ", theme.ContentAddIcon(), func() {
+	btnAdd := widget.NewButtonWithIcon("+ Добавить", theme.ContentAddIcon(), func() {
 		u.showContactFormDialog(nil)
 	})
 	btnAdd.Importance = widget.HighImportance
 
-	btnImport := widget.NewButtonWithIcon("РРјРїРѕСЂС‚", theme.UploadIcon(), func() {
+	btnImport := widget.NewButtonWithIcon("Импорт", theme.UploadIcon(), func() {
 		u.handleImportFileDialog()
 	})
 
-	btnExportJSON := widget.NewButtonWithIcon("Р­РєСЃРїРѕСЂС‚ JSON", theme.DownloadIcon(), func() {
+	btnExportJSON := widget.NewButtonWithIcon("Экспорт JSON", theme.DownloadIcon(), func() {
 		u.handleExportDialog(".json")
 	})
 
-	btnExportCSV := widget.NewButtonWithIcon("Р­РєСЃРїРѕСЂС‚ CSV", theme.DocumentSaveIcon(), func() {
+	btnExportCSV := widget.NewButtonWithIcon("Экспорт CSV", theme.DocumentSaveIcon(), func() {
 		u.handleExportDialog(".csv")
 	})
 
@@ -277,11 +277,11 @@ func (u *AppUI) buildTopBar() fyne.CanvasObject {
 		u.handleFetchFromAPI(5)
 	})
 
-	btnAudit := widget.NewButtonWithIcon("РђСѓРґРёС‚ Р±Р°Р·С‹", theme.InfoIcon(), func() {
+	btnAudit := widget.NewButtonWithIcon("Аудит базы", theme.InfoIcon(), func() {
 		u.showAuditReportDialog()
 	})
 
-	btnTheme := widget.NewButtonWithIcon("РўРµРјР°", theme.ColorPaletteIcon(), func() {
+	btnTheme := widget.NewButtonWithIcon("Тема", theme.ColorPaletteIcon(), func() {
 		u.toggleTheme()
 	})
 
