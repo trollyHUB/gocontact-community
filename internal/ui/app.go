@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -167,6 +168,64 @@ func (u *AppUI) buildUI() {
 	)
 
 	u.mainWin.SetContent(root)
+	u.setupKeyboardShortcuts()
+}
+
+func (u *AppUI) setupKeyboardShortcuts() {
+	// Ctrl+1: Вкладка "Контакты", Ctrl+2: Вкладка "Социальный граф"
+	u.mainWin.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.Key1,
+		Modifier: fyne.KeyModifierShortcutDefault,
+	}, func(_ fyne.Shortcut) {
+		if u.tabs != nil {
+			u.tabs.SelectIndex(0)
+		}
+	})
+
+	u.mainWin.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.Key2,
+		Modifier: fyne.KeyModifierShortcutDefault,
+	}, func(_ fyne.Shortcut) {
+		if u.tabs != nil {
+			u.tabs.SelectIndex(1)
+		}
+	})
+
+	// Ctrl+F: Быстрый фокус на строке поиска
+	u.mainWin.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.KeyF,
+		Modifier: fyne.KeyModifierShortcutDefault,
+	}, func(_ fyne.Shortcut) {
+		if u.searchEntry != nil {
+			u.mainWin.Canvas().Focus(u.searchEntry)
+		}
+	})
+
+	// Одиночные клавиши управления графом (D, Space, Escape, Home, 0)
+	u.mainWin.Canvas().SetOnTypedKey(func(ev *fyne.KeyEvent) {
+		switch ev.Name {
+		case fyne.KeyEscape:
+			if u.graphView != nil && u.graphView.canvasWidget != nil {
+				u.graphView.canvasWidget.ClearPathHighlight()
+			}
+		case fyne.KeyD:
+			if u.tabs != nil && u.tabs.SelectedIndex() == 1 && u.graphView != nil && u.graphView.canvasWidget != nil {
+				if u.graphView.canvasWidget.mode == GraphModeForce {
+					u.graphView.modeSelect.SetSelected("Орбиты Данбара")
+				} else {
+					u.graphView.modeSelect.SetSelected("Силовой граф")
+				}
+			}
+		case fyne.KeySpace:
+			if u.tabs != nil && u.tabs.SelectedIndex() == 1 && u.graphService != nil {
+				u.graphService.ReheatSimulation(0.65)
+			}
+		case fyne.KeyHome, fyne.Key0:
+			if u.tabs != nil && u.tabs.SelectedIndex() == 1 && u.graphView != nil && u.graphView.canvasWidget != nil {
+				u.graphView.canvasWidget.ResetCamera()
+			}
+		}
+	})
 }
 
 func (u *AppUI) buildMainMenu() *fyne.MainMenu {
