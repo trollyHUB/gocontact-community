@@ -111,7 +111,11 @@ func TestFullAppUI_WithSocialGraphTabsAndScreenshots(t *testing.T) {
 	// РџСЂРѕРІРµСЂСЏРµРј Р·Р°С…РІР°С‚ СЃРєСЂРёРЅС€РѕС‚РѕРІ
 	outDir := os.Getenv("GOCONTACT_SCREENSHOT_DIR")
 	if outDir == "" {
-		outDir = filepath.Join("..", "..", "docs", "screenshots", "v0.2.0")
+		if os.Getenv("CAPTURE_SCREENSHOTS") == "1" {
+			outDir = filepath.Join("..", "..", "docs", "screenshots", "v0.2.0")
+		} else {
+			outDir = t.TempDir()
+		}
 	}
 
 	// 1. РЎРєСЂРёРЅС€РѕС‚ СЂРµР¶РёРјР° Force Graph
