@@ -45,12 +45,40 @@ func OpenAndMigrate(dbPath string) (*sql.DB, error) {
 		return nil, fmt.Errorf("ошибка подключения к SQLite: %w", err)
 	}
 
+	// Гарантируем включение foreign keys и оптимизации WAL
+	if _, err := db.Exec("PRAGMA foreign_keys = ON;"); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("ошибка включения foreign_keys: %w", err)
+	}
+
 	if err := runMigrations(db); err != nil {
 		_ = db.Close()
 		return nil, err
 	}
 
 	return db, nil
+}
+
+func hasColumn(db *sql.DB, tableName, colName string) (bool, error) {
+	rows, err := db.Query(fmt.Sprintf("PRAGMA table_info(%s)", tableName))
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var cid int
+		var name, ctype string
+		var notnull, pk int
+		var dfltValue sql.NullString
+		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dfltValue, &pk); err != nil {
+			return false, err
+		}
+		if name == colName {
+			return true, nil
+		}
+	}
+	return false, rows.Err()
 }
 
 func runMigrations(db *sql.DB) error {
@@ -93,11 +121,101 @@ func runMigrations(db *sql.DB) error {
 	CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
 	CREATE INDEX IF NOT EXISTS idx_contacts_group ON contacts(group_id);
 	CREATE INDEX IF NOT EXISTS idx_contacts_favorite ON contacts(is_favorite);
+
+	-- Таблица организаций (узлы 2-го рода)
+	CREATE TABLE IF NOT EXISTS organizations (
+		id          INTEGER PRIMARY KEY AUTOINCREMENT,
+		name        TEXT    NOT NULL COLLATE NOCASE UNIQUE,
+		industry    TEXT    NOT NULL DEFAULT '',
+		domain      TEXT    NOT NULL DEFAULT '',
+		city        TEXT    NOT NULL DEFAULT '',
+		created_at  TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+	);
+
+	-- Таблица рёбер социального графа
+	CREATE TABLE IF NOT EXISTS contact_relationships (
+		id           INTEGER PRIMARY KEY AUTOINCREMENT,
+		source_id    INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+		target_id    INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+		rel_type     TEXT    NOT NULL CHECK (rel_type IN (
+						 'colleague', 'reports_to', 'founder_of',
+						 'family', 'friend', 'mentor', 'introduced_by', 'partner', 'implicit_colleague'
+					 )),
+		weight       INTEGER NOT NULL DEFAULT 3 CHECK (weight BETWEEN 1 AND 5),
+		is_directed  INTEGER NOT NULL DEFAULT 0 CHECK (is_directed IN (0, 1)),
+		context_note TEXT    NOT NULL DEFAULT '',
+		since_date   TEXT    NOT NULL DEFAULT '',
+		created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+		updated_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+		CONSTRAINT chk_no_self_loop CHECK (source_id != target_id),
+		CONSTRAINT uq_contact_edge UNIQUE (source_id, target_id, rel_type)
+	);
+
+	-- Таблица сохранённых координат и SNA-метрик
+	CREATE TABLE IF NOT EXISTS graph_layouts (
+		contact_id        INTEGER PRIMARY KEY REFERENCES contacts(id) ON DELETE CASCADE,
+		pos_x             REAL    NOT NULL DEFAULT 0.0,
+		pos_y             REAL    NOT NULL DEFAULT 0.0,
+		is_pinned         INTEGER NOT NULL DEFAULT 0 CHECK (is_pinned IN (0, 1)),
+		community_id      INTEGER NOT NULL DEFAULT 0,
+		betweenness_score REAL    NOT NULL DEFAULT 0.0,
+		updated_at        TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+	);
+
+	-- Покрывающие индексы для графа и организаций
+	CREATE INDEX IF NOT EXISTS idx_rel_source_target_weight
+		ON contact_relationships(source_id, target_id, weight DESC, rel_type);
+
+	CREATE INDEX IF NOT EXISTS idx_rel_target_source_weight
+		ON contact_relationships(target_id, source_id, weight DESC, rel_type);
+
+	CREATE INDEX IF NOT EXISTS idx_rel_type
+		ON contact_relationships(rel_type);
+
+	CREATE INDEX IF NOT EXISTS idx_graph_layouts_community
+		ON graph_layouts(community_id);
 	`
 
 	if _, err := db.Exec(schema); err != nil {
 		return fmt.Errorf("ошибка создания схемы таблиц: %w", err)
 	}
+
+	// Идемпотентное расширение таблицы contacts новыми колонками v0.2.0
+	hasOrgID, err := hasColumn(db, "contacts", "org_id")
+	if err != nil {
+		return fmt.Errorf("ошибка проверки колонки contacts.org_id: %w", err)
+	}
+	if !hasOrgID {
+		if _, err := db.Exec(`ALTER TABLE contacts ADD COLUMN org_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL`); err != nil {
+			return fmt.Errorf("ошибка добавления колонки org_id: %w", err)
+		}
+	}
+
+	hasDunbar, err := hasColumn(db, "contacts", "dunbar_override")
+	if err != nil {
+		return fmt.Errorf("ошибка проверки колонки contacts.dunbar_override: %w", err)
+	}
+	if !hasDunbar {
+		if _, err := db.Exec(`ALTER TABLE contacts ADD COLUMN dunbar_override INTEGER NOT NULL DEFAULT 0 CHECK (dunbar_override IN (0, 5, 15, 50, 150, 500))`); err != nil {
+			return fmt.Errorf("ошибка добавления колонки dunbar_override: %w", err)
+		}
+	}
+
+	// Индекс по org_id (создаётся после гарантированного добавления колонки org_id)
+	if _, err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_contacts_org_id ON contacts(org_id) WHERE org_id IS NOT NULL;`); err != nil {
+		return fmt.Errorf("ошибка создания индекса idx_contacts_org_id: %w", err)
+	}
+
+	// Миграция данных v0.1.0 -> v0.2.0: нормализация текстовых компаний в организации
+	_, _ = db.Exec(`
+		INSERT OR IGNORE INTO organizations (name)
+		SELECT DISTINCT TRIM(company) FROM contacts 
+		WHERE TRIM(company) != '';
+
+		UPDATE contacts SET org_id = (
+			SELECT o.id FROM organizations o WHERE LOWER(o.name) = LOWER(TRIM(contacts.company))
+		) WHERE (org_id IS NULL OR org_id = 0) AND TRIM(company) != '';
+	`)
 
 	// Предзаполнение базовых групп из массива DefaultGroups()
 	for _, g := range domain.DefaultGroups() {

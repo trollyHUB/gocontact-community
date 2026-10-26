@@ -1,6 +1,6 @@
-GoContact Studio Community Edition
+GoContact Studio
 Local-First Personal CRM & Social Graph Platform
-https://github.com/trollyHUB/gocontact-community
+https://github.com/trollyHUB/gocontact-studio
 
 Copyright (C) 2026 Tolegen Manassov (GitHub: trollyHUB) <tolegen.manasov05@gmail.com>
 All rights reserved, except as expressly granted below.
@@ -47,7 +47,7 @@ additional terms apply to this program:
        and SPDX license headers in source files; and (iii) the
        "About" dialog / "--version" output attribution line:
          "Based on GoContact Studio by Tolegen Manassov (trollyHUB)
-          - https://github.com/trollyHUB/gocontact-community"
+          - https://github.com/trollyHUB/gocontact-studio"
        Modified versions may ADD their own copyright lines but may
        not remove or obscure existing ones.
 
@@ -68,15 +68,20 @@ additional terms apply to this program:
        those contractual assumptions directly impose.
 
 =====================================================================
-3. LICENSE MODEL AND INTELLECTUAL PROPERTY
+3. LICENSE HISTORY (IMPORTANT)
 =====================================================================
 
-  - The GoContact Studio Community Edition repository is licensed
-    exclusively under the GNU Affero General Public License v3
-    (AGPL-3.0-only) with Section 7 Plugin Exception.
-  - Advanced proprietary modules, enterprise extensions and architecture
-    vault specifications are reserved exclusively under commercial
-    licensing by the Copyright Holder.
+  - Git tag v0.1.0 and all commits before the license change commit
+    were published under the MIT License. Those exact historical
+    copies remain available under MIT; this cannot be revoked.
+  - Every commit AFTER the license change commit (v0.2.0-dev and all
+    later versions) is licensed ONLY under the dual model above
+    (AGPL-3.0-only OR Commercial License).
+  - New features, modules and documentation authored after the change
+    (Social Graph, Personal CRM, Chat Hub, Sync, AI/MCP, Wasm plugins,
+    React/TypeScript web UI, the 80-volume specification suite in
+    docs/roadmap/ and ADR-0004..ADR-0016) were never released under
+    MIT and are NOT available under MIT.
 
 =====================================================================
 4. CONTRIBUTIONS

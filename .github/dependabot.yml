@@ -1,4 +1,4 @@
-# Dependabot configuration for GoContact Community
+# Dependabot configuration for GoContact Studio Master
 version: 2
 updates:
   - package-ecosystem: "gomod"

@@ -4,6 +4,8 @@
 package ui
 
 import (
+	"context"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -16,13 +18,15 @@ import (
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
 	"github.com/trollyHUB/gocontact-studio/internal/infrastructure/network"
 	"github.com/trollyHUB/gocontact-studio/internal/service"
+	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
-// AppUI управляет главным окном и всеми графическими компонентами Fyne v2.
+// AppUI СѓРїСЂР°РІР»СЏРµС‚ РіР»Р°РІРЅС‹Рј РѕРєРЅРѕРј Рё РІСЃРµРјРё РіСЂР°С„РёС‡РµСЃРєРёРјРё РєРѕРјРїРѕРЅРµРЅС‚Р°РјРё Fyne v2.
 type AppUI struct {
 	cfg             *config.Config
 	configPath      string
 	service         *service.ContactService
+	graphService    sna.GraphService
 	backupScheduler *service.BackupScheduler
 	apiServer       *network.LocalAPIServer
 
@@ -30,13 +34,17 @@ type AppUI struct {
 	mainWin   fyne.Window
 	themeMode string
 
-	// Состояние фильтров и данных
+	// РќР°РІРёРіР°С†РёСЏ Рё РІРєР»Р°РґРєРё
+	tabs      *container.AppTabs
+	graphView *GraphView
+
+	// РЎРѕСЃС‚РѕСЏРЅРёРµ С„РёР»СЊС‚СЂРѕРІ Рё РґР°РЅРЅС‹С…
 	currentFilter   domain.ContactFilter
 	contacts        []*domain.Contact
 	groups          []*domain.Group
 	selectedContact *domain.Contact
 
-	// Виджеты интерфейса
+	// Р’РёРґР¶РµС‚С‹ РёРЅС‚РµСЂС„РµР№СЃР°
 	searchEntry       *widget.Entry
 	sortSelect        *widget.Select
 	citySelect        *widget.Select
@@ -49,24 +57,26 @@ type AppUI struct {
 	progressBar       *widget.ProgressBar
 }
 
-// NewAppUI создаёт и настраивает графическое приложение.
+// NewAppUI СЃРѕР·РґР°С‘С‚ Рё РЅР°СЃС‚СЂР°РёРІР°РµС‚ РіСЂР°С„РёС‡РµСЃРєРѕРµ РїСЂРёР»РѕР¶РµРЅРёРµ СЃ РїРѕРґРґРµСЂР¶РєРѕР№ СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р°.
 func NewAppUI(
 	cfg *config.Config,
 	configPath string,
 	svc *service.ContactService,
+	graphSvc sna.GraphService,
 	backupSched *service.BackupScheduler,
 	apiServer *network.LocalAPIServer,
 ) *AppUI {
 	fyneApp := app.NewWithID("kz.gocontact.studio")
-	return NewAppUIWithApp(fyneApp, cfg, configPath, svc, backupSched, apiServer)
+	return NewAppUIWithApp(fyneApp, cfg, configPath, svc, graphSvc, backupSched, apiServer)
 }
 
-// NewAppUIWithApp инициализирует полный интерфейс на переданном экземпляре fyne.App (удобно для Headless-тестов).
+// NewAppUIWithApp РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ РїРѕР»РЅС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ РЅР° РїРµСЂРµРґР°РЅРЅРѕРј СЌРєР·РµРјРїР»СЏСЂРµ fyne.App (СѓРґРѕР±РЅРѕ РґР»СЏ Headless-С‚РµСЃС‚РѕРІ).
 func NewAppUIWithApp(
 	fyneApp fyne.App,
 	cfg *config.Config,
 	configPath string,
 	svc *service.ContactService,
+	graphSvc sna.GraphService,
 	backupSched *service.BackupScheduler,
 	apiServer *network.LocalAPIServer,
 ) *AppUI {
@@ -87,6 +97,7 @@ func NewAppUIWithApp(
 		cfg:             cfg,
 		configPath:      configPath,
 		service:         svc,
+		graphService:    graphSvc,
 		backupScheduler: backupSched,
 		apiServer:       apiServer,
 		fyneApp:         fyneApp,
@@ -102,9 +113,18 @@ func NewAppUIWithApp(
 	return ui
 }
 
-// Run запускает главный цикл событий графического окна.
+// Run Р·Р°РїСѓСЃРєР°РµС‚ РіР»Р°РІРЅС‹Р№ С†РёРєР» СЃРѕР±С‹С‚РёР№ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР°.
 func (u *AppUI) Run() {
 	u.mainWin.ShowAndRun()
+}
+
+// SelectContactInMainTab РїРµСЂРµРєР»СЋС‡Р°РµС‚ РёРЅС‚РµСЂС„РµР№СЃ РЅР° РїРµСЂРІСѓСЋ РІРєР»Р°РґРєСѓ Рё РІС‹Р±РёСЂР°РµС‚ СѓРєР°Р·Р°РЅРЅС‹Р№ РєРѕРЅС‚Р°РєС‚.
+func (u *AppUI) SelectContactInMainTab(c *domain.Contact) {
+	if u.tabs != nil {
+		u.tabs.SelectIndex(0)
+	}
+	u.selectedContact = c
+	u.renderDetailPanel(c)
 }
 
 func (u *AppUI) buildUI() {
@@ -116,13 +136,26 @@ func (u *AppUI) buildUI() {
 	centerPanel := u.buildContactListPanel()
 	u.renderDetailPanel(nil)
 
-	// Правая часть: Список контактов (Master) + Карточка контакта (Detail)
+	// РџСЂР°РІР°СЏ С‡Р°СЃС‚СЊ: РЎРїРёСЃРѕРє РєРѕРЅС‚Р°РєС‚РѕРІ (Master) + РљР°СЂС‚РѕС‡РєР° РєРѕРЅС‚Р°РєС‚Р° (Detail)
 	masterDetailSplit := container.NewHSplit(centerPanel, u.detailContainer)
 	masterDetailSplit.Offset = 0.39
 
-	// Главный трёхколоночный макет: Боковая панель категорий + Master-Detail
-	mainSplit := container.NewHSplit(sidebar, masterDetailSplit)
-	mainSplit.Offset = 0.20
+	// Р’РєР»Р°РґРєР° 1: Р“Р»Р°РІРЅС‹Р№ С‚СЂС‘С…РєРѕР»РѕРЅРѕС‡РЅС‹Р№ СЂРµРµСЃС‚СЂ РєРѕРЅС‚Р°РєС‚РѕРІ
+	contactsSplit := container.NewHSplit(sidebar, masterDetailSplit)
+	contactsSplit.Offset = 0.20
+
+	// Р’РєР»Р°РґРєР° 2: РРЅС‚РµСЂР°РєС‚РёРІРЅР°СЏ СЃСЂРµРґР° В«РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„В» (РЎРїСЂРёРЅС‚С‹ 2.3 & 2.4)
+	u.graphView = NewGraphView(u, u.service, u.graphService)
+
+	u.tabs = container.NewAppTabs(
+		container.NewTabItem("рџ“‡ РљРѕРЅС‚Р°РєС‚С‹", contactsSplit),
+		container.NewTabItem("рџ•ёпёЏ РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„", u.graphView.Container()),
+	)
+	u.tabs.OnSelected = func(tab *container.TabItem) {
+		if tab.Text == "рџ•ёпёЏ РЎРѕС†РёР°Р»СЊРЅС‹Р№ РіСЂР°С„" && u.graphView != nil {
+			u.graphView.RefreshData()
+		}
+	}
 
 	statusBar := u.buildStatusBar()
 
@@ -130,72 +163,91 @@ func (u *AppUI) buildUI() {
 		topToolbar,
 		statusBar,
 		nil, nil,
-		mainSplit,
+		u.tabs,
 	)
 
 	u.mainWin.SetContent(root)
 }
 
 func (u *AppUI) buildMainMenu() *fyne.MainMenu {
-	fileMenu := fyne.NewMenu("Файл",
-		fyne.NewMenuItem("+ Новый контакт...", func() {
+	fileMenu := fyne.NewMenu("Р¤Р°Р№Р»",
+		fyne.NewMenuItem("+ РќРѕРІС‹Р№ РєРѕРЅС‚Р°РєС‚...", func() {
 			u.showContactFormDialog(nil)
 		}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("Импорт из файла (CSV / JSON / VCF)...", func() {
+		fyne.NewMenuItem("РРјРїРѕСЂС‚ РёР· С„Р°Р№Р»Р° (CSV / JSON / VCF)...", func() {
 			u.handleImportFileDialog()
 		}),
-		fyne.NewMenuItem("Экспорт в JSON...", func() {
+		fyne.NewMenuItem("Р­РєСЃРїРѕСЂС‚ РІ JSON...", func() {
 			u.handleExportDialog(".json")
 		}),
-		fyne.NewMenuItem("Экспорт в CSV (Excel)...", func() {
+		fyne.NewMenuItem("Р­РєСЃРїРѕСЂС‚ РІ CSV (Excel)...", func() {
 			u.handleExportDialog(".csv")
 		}),
-		fyne.NewMenuItem("Экспорт в vCard (.vcf)...", func() {
+		fyne.NewMenuItem("Р­РєСЃРїРѕСЂС‚ РІ vCard (.vcf)...", func() {
 			u.handleExportDialog(".vcf")
 		}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("Создать резервную копию сейчас", func() {
+		fyne.NewMenuItem("РЎРѕР·РґР°С‚СЊ СЂРµР·РµСЂРІРЅСѓСЋ РєРѕРїРёСЋ СЃРµР№С‡Р°СЃ", func() {
 			u.backupScheduler.TriggerNow()
 		}),
 	)
 
-	contactsMenu := fyne.NewMenu("Контакты",
-		fyne.NewMenuItem("Показать все контакты", func() {
+	contactsMenu := fyne.NewMenu("РљРѕРЅС‚Р°РєС‚С‹",
+		fyne.NewMenuItem("РџРѕРєР°Р·Р°С‚СЊ РІСЃРµ РєРѕРЅС‚Р°РєС‚С‹", func() {
 			u.resetFilters()
 		}),
-		fyne.NewMenuItem("★ Только избранные", func() {
+		fyne.NewMenuItem("в… РўРѕР»СЊРєРѕ РёР·Р±СЂР°РЅРЅС‹Рµ", func() {
 			u.favOnlyCheck.SetChecked(true)
 		}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("Создать новую категорию...", func() {
+		fyne.NewMenuItem("РЎРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ РєР°С‚РµРіРѕСЂРёСЋ...", func() {
 			u.showNewGroupDialog()
 		}),
-		fyne.NewMenuItem("Переименовать выбранную категорию...", func() {
+		fyne.NewMenuItem("РџРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ РєР°С‚РµРіРѕСЂРёСЋ...", func() {
 			u.showEditSelectedGroupDialog()
 		}),
-		fyne.NewMenuItem("Удалить выбранную категорию", func() {
+		fyne.NewMenuItem("РЈРґР°Р»РёС‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ РєР°С‚РµРіРѕСЂРёСЋ", func() {
 			u.handleDeleteSelectedGroup()
 		}),
 	)
 
-	toolsMenu := fyne.NewMenu("Сеть и Горутины",
-		fyne.NewMenuItem("Загрузить 5 контактов из REST API (Worker Pool)", func() {
+	toolsMenu := fyne.NewMenu("РЎРµС‚СЊ Рё Р“СЂР°С„",
+		fyne.NewMenuItem("РџРµСЂРµР№С‚Рё Рє РЎРѕС†РёР°Р»СЊРЅРѕРјСѓ РіСЂР°С„Сѓ", func() {
+			if u.tabs != nil {
+				u.tabs.SelectIndex(1)
+			}
+		}),
+		fyne.NewMenuItem("РџРµСЂРµСЃС‡РёС‚Р°С‚СЊ SNA РјРµС‚СЂРёРєРё (Р‘СЂР°РЅРґРµСЃ/Р›СѓРІРµРЅ)", func() {
+			if u.graphService != nil {
+				go func() {
+					_ = u.graphService.RecalculateMetrics(context.Background())
+					fyne.Do(func() {
+						if u.graphView != nil {
+							u.graphView.RefreshData()
+						}
+						u.setStatus("РњРµС‚СЂРёРєРё СЃРѕС†РёР°Р»СЊРЅРѕРіРѕ РіСЂР°С„Р° СѓСЃРїРµС€РЅРѕ РїРµСЂРµСЃС‡РёС‚Р°РЅС‹")
+					})
+				}()
+			}
+		}),
+		fyne.NewMenuItemSeparator(),
+		fyne.NewMenuItem("Р—Р°РіСЂСѓР·РёС‚СЊ 5 РєРѕРЅС‚Р°РєС‚РѕРІ РёР· REST API (Worker Pool)", func() {
 			u.handleFetchFromAPI(5)
 		}),
-		fyne.NewMenuItem("Многопоточный аудит базы (Goroutines)", func() {
+		fyne.NewMenuItem("РњРЅРѕРіРѕРїРѕС‚РѕС‡РЅС‹Р№ Р°СѓРґРёС‚ Р±Р°Р·С‹ (Goroutines)", func() {
 			u.showAuditReportDialog()
 		}),
-		fyne.NewMenuItem("Тестировать локальный REST API сервер", func() {
+		fyne.NewMenuItem("РўРµСЃС‚РёСЂРѕРІР°С‚СЊ Р»РѕРєР°Р»СЊРЅС‹Р№ REST API СЃРµСЂРІРµСЂ", func() {
 			u.showLocalAPITesterDialog()
 		}),
 	)
 
-	viewMenu := fyne.NewMenu("Вид и Справка",
-		fyne.NewMenuItem("Переключить тему (Тёмная / Светлая)", func() {
+	viewMenu := fyne.NewMenu("Р’РёРґ Рё РЎРїСЂР°РІРєР°",
+		fyne.NewMenuItem("РџРµСЂРµРєР»СЋС‡РёС‚СЊ С‚РµРјСѓ (РўС‘РјРЅР°СЏ / РЎРІРµС‚Р»Р°СЏ)", func() {
 			u.toggleTheme()
 		}),
-		fyne.NewMenuItem("О программе", func() {
+		fyne.NewMenuItem("Рћ РїСЂРѕРіСЂР°РјРјРµ", func() {
 			u.showAboutDialog()
 		}),
 	)
@@ -204,20 +256,20 @@ func (u *AppUI) buildMainMenu() *fyne.MainMenu {
 }
 
 func (u *AppUI) buildTopBar() fyne.CanvasObject {
-	btnAdd := widget.NewButtonWithIcon("+ Добавить", theme.ContentAddIcon(), func() {
+	btnAdd := widget.NewButtonWithIcon("+ Р”РѕР±Р°РІРёС‚СЊ", theme.ContentAddIcon(), func() {
 		u.showContactFormDialog(nil)
 	})
 	btnAdd.Importance = widget.HighImportance
 
-	btnImport := widget.NewButtonWithIcon("Импорт", theme.UploadIcon(), func() {
+	btnImport := widget.NewButtonWithIcon("РРјРїРѕСЂС‚", theme.UploadIcon(), func() {
 		u.handleImportFileDialog()
 	})
 
-	btnExportJSON := widget.NewButtonWithIcon("Экспорт JSON", theme.DownloadIcon(), func() {
+	btnExportJSON := widget.NewButtonWithIcon("Р­РєСЃРїРѕСЂС‚ JSON", theme.DownloadIcon(), func() {
 		u.handleExportDialog(".json")
 	})
 
-	btnExportCSV := widget.NewButtonWithIcon("Экспорт CSV", theme.DocumentSaveIcon(), func() {
+	btnExportCSV := widget.NewButtonWithIcon("Р­РєСЃРїРѕСЂС‚ CSV", theme.DocumentSaveIcon(), func() {
 		u.handleExportDialog(".csv")
 	})
 
@@ -225,11 +277,11 @@ func (u *AppUI) buildTopBar() fyne.CanvasObject {
 		u.handleFetchFromAPI(5)
 	})
 
-	btnAudit := widget.NewButtonWithIcon("Аудит базы", theme.InfoIcon(), func() {
+	btnAudit := widget.NewButtonWithIcon("РђСѓРґРёС‚ Р±Р°Р·С‹", theme.InfoIcon(), func() {
 		u.showAuditReportDialog()
 	})
 
-	btnTheme := widget.NewButtonWithIcon("Тема", theme.ColorPaletteIcon(), func() {
+	btnTheme := widget.NewButtonWithIcon("РўРµРјР°", theme.ColorPaletteIcon(), func() {
 		u.toggleTheme()
 	})
 

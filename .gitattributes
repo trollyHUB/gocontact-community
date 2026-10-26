@@ -8,6 +8,8 @@
 *.csv text
 *.vcf text
 Makefile text
+*.sh text eol=lf
+*.ps1 text eol=crlf
 
 # Binary assets (exclude from textual diffs and line conversion)
 *.png binary -diff

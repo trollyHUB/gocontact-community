@@ -5,10 +5,13 @@ package network
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/trollyHUB/gocontact-studio/internal/domain"
+	"github.com/trollyHUB/gocontact-studio/internal/repository/memory"
 	"github.com/trollyHUB/gocontact-studio/internal/repository/sqlite"
+	"github.com/trollyHUB/gocontact-studio/internal/service/sna"
 )
 
 func TestLocalAPIServer_AndHTTPClient(t *testing.T) {
@@ -20,7 +23,12 @@ func TestLocalAPIServer_AndHTTPClient(t *testing.T) {
 	defer db.Close()
 
 	repo := sqlite.NewContactRepo(db)
-	srv := NewLocalAPIServer(0, repo) // Выбираем свободный порт
+	graphRepo := sqlite.NewGraphRepo(db)
+	topoCache := memory.NewTopologyCache()
+	graphSvc := sna.NewGraphService(graphRepo, repo, topoCache, 2)
+	_ = graphSvc.ReloadGraph(ctx, false)
+
+	srv := NewLocalAPIServer(0, repo, graphSvc) // Выбираем свободный порт
 	if err := srv.Start(); err != nil {
 		t.Fatalf("не удалось запустить локальный REST API сервер: %v", err)
 	}
@@ -47,4 +55,23 @@ func TestLocalAPIServer_AndHTTPClient(t *testing.T) {
 	if avatarURL == "" {
 		t.Error("ожидался сгенерированный URL аватара по Email")
 	}
+
+	// Проверяем эндпоинты health, stats, graph
+	resp, err := http.Get(srv.BaseURL() + "/api/v1/health")
+	if err != nil || resp.StatusCode != http.StatusOK {
+		t.Errorf("ошибка GET /api/v1/health: %v, status: %v", err, resp.StatusCode)
+	}
+	resp.Body.Close()
+
+	resp, err = http.Get(srv.BaseURL() + "/api/v1/stats")
+	if err != nil || resp.StatusCode != http.StatusOK {
+		t.Errorf("ошибка GET /api/v1/stats: %v, status: %v", err, resp.StatusCode)
+	}
+	resp.Body.Close()
+
+	resp, err = http.Get(srv.BaseURL() + "/api/v1/graph")
+	if err != nil || resp.StatusCode != http.StatusOK {
+		t.Errorf("ошибка GET /api/v1/graph: %v, status: %v", err, resp.StatusCode)
+	}
+	resp.Body.Close()
 }

@@ -89,25 +89,27 @@ func (a Address) IsEmpty() bool {
 
 // Contact — главная доменная сущность «Контакт» адресной книги.
 type Contact struct {
-	ID         int64     `json:"id"`
-	GroupID    int64     `json:"group_id"`
-	GroupName  string    `json:"group_name,omitempty"`
-	FirstName  string    `json:"first_name"`
-	LastName   string    `json:"last_name"`
-	MiddleName string    `json:"middle_name,omitempty"`
-	Phone      string    `json:"phone"`
-	WorkPhone  string    `json:"work_phone,omitempty"`
-	PhoneType  PhoneType `json:"phone_type"`
-	Email      string    `json:"email,omitempty"`
-	Company    string    `json:"company,omitempty"`
-	JobTitle   string    `json:"job_title,omitempty"`
-	Address    Address   `json:"address"` // Вложенная структура (композиция)
-	Birthday   string    `json:"birthday,omitempty"`
-	Tags       []string  `json:"tags"` // Срез (slice) тегов
-	Notes      string    `json:"notes,omitempty"`
-	IsFavorite bool      `json:"is_favorite"`
-	AvatarURL  string    `json:"avatar_url,omitempty"`
-	AuditInfo            // Встроенная структура (Struct Embedding )
+	ID             int64     `json:"id"`
+	GroupID        int64     `json:"group_id"`
+	GroupName      string    `json:"group_name,omitempty"`
+	FirstName      string    `json:"first_name"`
+	LastName       string    `json:"last_name"`
+	MiddleName     string    `json:"middle_name,omitempty"`
+	Phone          string    `json:"phone"`
+	WorkPhone      string    `json:"work_phone,omitempty"`
+	PhoneType      PhoneType `json:"phone_type"`
+	Email          string    `json:"email,omitempty"`
+	Company        string    `json:"company,omitempty"`
+	JobTitle       string    `json:"job_title,omitempty"`
+	Address        Address   `json:"address"` // Вложенная структура (композиция)
+	Birthday       string    `json:"birthday,omitempty"`
+	Tags           []string  `json:"tags"` // Срез (slice) тегов
+	Notes          string    `json:"notes,omitempty"`
+	IsFavorite     bool      `json:"is_favorite"`
+	AvatarURL      string    `json:"avatar_url,omitempty"`
+	OrgID          int64     `json:"org_id,omitempty"`
+	DunbarOverride int       `json:"dunbar_override,omitempty"`
+	AuditInfo                // Встроенная структура (Struct Embedding )
 }
 
 // FullName возвращает полное ФИО контакта в формате «Фамилия Имя Отчество».

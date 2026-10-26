@@ -1,19 +1,28 @@
 #!/bin/sh
-# GoContact Community — Anti-Leak & Pre-Commit Quality Gate Hook
+# GoContact Studio — Pre-Commit Quality Gate Hook
 
 echo "[HOOK: pre-commit] Verifying staged files..."
 
-# 1. Anti-Leak Sentinel: prevent confidential files from ever being added or modified
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
 
-LEAK_PATTERNS="docs/roadmap docs/adr 07_FUTURE_ROADMAP 08_STRATEGIC .agents tools AGENTS.md 06_DEFENSE_GUIDE 05_ROADMAP_AND_STAGES .env id_rsa"
+# Check if running in Community repo or Master repo
+ORIGIN_URL=$(git remote get-url origin 2>/dev/null || echo "")
+
+case "$ORIGIN_URL" in
+    *"gocontact-community"*)
+        LEAK_PATTERNS="docs/roadmap docs/adr 07_FUTURE_ROADMAP 08_STRATEGIC .agents tools AGENTS.md 06_DEFENSE_GUIDE 05_ROADMAP_AND_STAGES .env id_rsa"
+        ;;
+    *)
+        # In Master SSOT, roadmap specs and agents are legitimate; only block credentials
+        LEAK_PATTERNS=".env id_rsa id_ed25519 credentials.json"
+        ;;
+esac
 
 for file in $STAGED_FILES; do
     for pattern in $LEAK_PATTERNS; do
         case "$file" in
             *"$pattern"*)
-                echo "❌ [SECURITY ALERT] Attempting to commit confidential IP or secret: $file"
-                echo "   This file is strictly forbidden in the public community repository!"
+                echo "❌ [SECURITY ALERT] Attempting to commit confidential secret or forbidden file: $file"
                 echo "   Aborting commit."
                 exit 1
                 ;;
@@ -22,7 +31,7 @@ for file in $STAGED_FILES; do
 done
 
 # 2. Go Format Check on staged .go files
-STAGED_GO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$')
+STAGED_GO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$' || true)
 if [ -n "$STAGED_GO_FILES" ]; then
     UNFORMATTED=$(gofmt -l $STAGED_GO_FILES)
     if [ -n "$UNFORMATTED" ]; then
@@ -34,9 +43,9 @@ if [ -n "$STAGED_GO_FILES" ]; then
 fi
 
 # 3. Clean Architecture: verify zero external imports in internal/domain
-DOMAIN_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '^internal/domain/.*\.go$')
+DOMAIN_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '^internal/domain/.*\.go$' || true)
 if [ -n "$DOMAIN_FILES" ]; then
-    FORBIDDEN_IMPORTS=$(grep -E '("database/sql"|"fyne.io/|"net/http"|"modernc.org/|internal/)' $DOMAIN_FILES 2>/dev/null)
+    FORBIDDEN_IMPORTS=$(grep -E '("database/sql"|"fyne.io/|"net/http"|"modernc.org/|internal/)' $DOMAIN_FILES 2>/dev/null || true)
     if [ -n "$FORBIDDEN_IMPORTS" ]; then
         echo "❌ [CLEAN ARCHITECTURE ERROR] Forbidden import detected in internal/domain:"
         echo "$FORBIDDEN_IMPORTS"
