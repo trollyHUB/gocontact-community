@@ -33,7 +33,7 @@ jobs:
           Get-FileHash -Algorithm SHA256 gocontact-windows-amd64.exe | Out-File -Encoding utf8 SHA256SUMS.txt
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             gocontact-windows-amd64.exe
