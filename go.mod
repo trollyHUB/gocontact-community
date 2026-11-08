@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	fyne.io/fyne/v2 v2.8.2
-	modernc.org/sqlite v1.61.0
+	modernc.org/sqlite v1.61.1
 )
 
 require (
